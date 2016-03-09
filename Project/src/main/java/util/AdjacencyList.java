@@ -189,19 +189,10 @@ public class AdjacencyList {
         }
 
     }
-
-    /**
-     * Get the index of (Sub)AdjacencyList for Node n+1. This index might be
-     * equal to length of the total AdjacencyList, so make sure that
-     * getStartOf(n) is lower than getEndOf(n) before addressing the edge. Runs
-     * in O(3);
-     *
-     * @param n the node
-     * @return the starting index of the adjacencyList for the node
-     */
-    public int getEndOf(int n) {
-        return n + 1 < listStarts.length ? listStarts[n + 1] : adjacencyList.length;
-    }
+    
+    
+    // ---- Methods ----
+   
 
     /**
      * Get the starting index of (Sub)AdjacencyList for Node n. This index might
@@ -214,6 +205,19 @@ public class AdjacencyList {
      */
     public int getStartOf(int n) {
         return listStarts[n];
+    }
+    
+    /**
+     * Get the index of (Sub)AdjacencyList for Node n+1. This index might be
+     * equal to length of the total AdjacencyList, so make sure that
+     * getStartOf(n) is lower than getEndOf(n) before addressing the edge. Runs
+     * in O(3);
+     *
+     * @param n the node
+     * @return the starting index of the adjacencyList for the node
+     */
+    public int getEndOf(int n) {
+        return n + 1 < listStarts.length ? listStarts[n + 1] : adjacencyList.length;
     }
 
     /**
