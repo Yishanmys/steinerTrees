@@ -328,4 +328,47 @@ public class AdjacencyList {
         return Arrays.stream(adjacencyList, getStartOf(n), getEndOf(n));
     }
 
+    
+    
+    public static AdjacencyList kruskal(int nodeCount, int edgeCount, int[] nodeI, int[] nodeJ, final float[] weights, int initMethod) {
+        NodeSetElement[] setElements = new NodeSetElement[nodeCount];
+        NodeSet[] nodeSets = new NodeSet[nodeCount];
+        int indices[] = new int[edgeCount];
+        int newNodeI[] = new int[edgeCount];
+        int newNodeJ[] = new int[edgeCount];
+        float newWeights[] = new float[edgeCount];
+        
+        for(int i=0; i<nodeCount; i++) {
+            setElements[i] = new NodeSetElement(i);
+            nodeSets[i] = new NodeSet(setElements[i]);
+        }
+        
+        for(int i=0; i<edgeCount; i++) {
+            indices[i] = i;
+        }
+        
+        Arrays.sort(indices, new Comparator<Integer>() {
+
+            @Override
+            public int compare(Integer i1, Integer i2) {
+                return (int) (weights[i1] - weights[i2]);
+            }
+        });
+        
+        int newEdgeCount = 0;
+        for(int i=0; i<edgeCount; i++) {
+            NodeSetElement iNode = setElements[nodeI[indices[i]]];
+            NodeSetElement jNode = setElements[nodeJ[indices[i]]];
+            
+            if(iNode.setRef != jNode.setRef) {
+                newNodeI[edgeCount] = iNode.value;
+                newNodeJ[edgeCount] = jNode.value;
+                newWeights[edgeCount] = weights[indices[i]];
+                NodeSet.union(iNode.setRef, jNode.setRef);
+                edgeCount++;
+            }
+        }
+        
+        return new AdjacencyList(nodeCount, newEdgeCount, newNodeI, newNodeJ, newWeights, initMethod);
+    }
 }
