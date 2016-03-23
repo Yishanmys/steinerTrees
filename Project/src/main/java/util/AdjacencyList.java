@@ -333,7 +333,7 @@ public class AdjacencyList {
     public static AdjacencyList kruskal(int nodeCount, int edgeCount, int[] nodeI, int[] nodeJ, final float[] weights, int initMethod) {
         NodeSetElement[] setElements = new NodeSetElement[nodeCount];
         NodeSet[] nodeSets = new NodeSet[nodeCount];
-        int indices[] = new int[edgeCount];
+        Integer indices[] = new Integer[edgeCount];
         int newNodeI[] = new int[edgeCount];
         int newNodeJ[] = new int[edgeCount];
         float newWeights[] = new float[edgeCount];
