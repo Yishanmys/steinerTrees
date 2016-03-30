@@ -124,7 +124,7 @@ public class AdjacencyListTest {
      * Test of getEdgeIndex method, of class AdjacencyList.
      */
     @org.junit.Test
-    public void testEdgeIndex() {
+    public void testGetEdgeIndex() {
         System.out.println("getEdgeIndex");
         int[] testI = new int[]{0, 1, 2, 3, 5, 7};
         int[] testJ = new int[]{0, 7, 2, 4, 5, 1};
@@ -169,37 +169,6 @@ public class AdjacencyListTest {
             assertEquals(expectedResult, result);
         }
 
-    }
-
-    /**
-     * Test of getEdgeIndex method, of class AdjacencyList.
-     */
-    @org.junit.Test
-    public void testGetEdgeIndex() {
-        System.out.println("getEdgeIndex");
-        int i = 0;
-        int j = 0;
-        AdjacencyList instance = null;
-        int expResult = 0;
-        int result = instance.getEdgeIndex(i, j);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of streamEdgesFrom method, of class AdjacencyList.
-     */
-    @org.junit.Test
-    public void testStreamEdgesFrom() {
-        System.out.println("streamEdgesFrom");
-        int n = 0;
-        AdjacencyList instance = null;
-        IntStream expResult = null;
-        IntStream result = instance.streamEdgesFrom(n);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
 }

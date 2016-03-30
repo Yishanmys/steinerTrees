@@ -46,7 +46,8 @@ public class AdjacencyList {
      * @param nodeI represents an edge from nodeI[m] to nodeJ[m]
      * @param nodeJ represents an edge from nodeI[m] to nodeJ[m]
      * @param weights the weight of edge m
-     * @param initMethod INIT_(PARTLY_COUNTING_SORT|PURE_COUNTING_SORT|ARRAY_SORT)
+     * @param initMethod
+     * INIT_(PARTLY_COUNTING_SORT|PURE_COUNTING_SORT|ARRAY_SORT)
      */
     public AdjacencyList(int nodeCount, int edgeCount, int[] nodeI, int[] nodeJ, float[] weights, int initMethod) {
         adjacencyList = new int[edgeCount];
@@ -189,11 +190,8 @@ public class AdjacencyList {
         }
 
     }
-    
-    
-    // ---- Methods ----
-   
 
+    // ---- Methods ----
     /**
      * Get the starting index of (Sub)AdjacencyList for Node n. This index might
      * be equal to length of the total AdjacencyList, so make sure that
@@ -206,7 +204,7 @@ public class AdjacencyList {
     public int getStartOf(int n) {
         return listStarts[n];
     }
-    
+
     /**
      * Get the index of (Sub)AdjacencyList for Node n+1. This index might be
      * equal to length of the total AdjacencyList, so make sure that
@@ -229,22 +227,23 @@ public class AdjacencyList {
     public int getToNode(int m) {
         return adjacencyList[m];
     }
-    
+
     /**
-     * Get the index of the Node from which the given Edge comes. Runs in O(log(N)), so use wisely.
-     * 
+     * Get the index of the Node from which the given Edge comes. Runs in
+     * O(log(N)), so use wisely.
+     *
      * @param m the edge
      * @return the index
      */
     public int getFromNode(int m) {
         int mindex = 0;
-        int maxdex = listStarts.length-1;
-        while(mindex < maxdex) {
-            int index = maxdex+mindex/2;
+        int maxdex = listStarts.length - 1;
+        while (mindex < maxdex) {
+            int index = maxdex + mindex / 2;
             if (getStartOf(index) > m) {
-                maxdex = index-1;
+                maxdex = index - 1;
             } else if (getEndOf(index) <= m) {
-                mindex = index+1;
+                mindex = index + 1;
             } else {
                 return index;
             }
@@ -271,6 +270,14 @@ public class AdjacencyList {
      */
     public int getDegree(int n) {
         return getEndOf(n) - getStartOf(n);
+    }
+
+    public int getNodeCount() {
+        return listStarts.length;
+    }
+
+    public int getEdgeCount() {
+        return adjacencyList.length;
     }
 
     /**
@@ -328,8 +335,6 @@ public class AdjacencyList {
         return Arrays.stream(adjacencyList, getStartOf(n), getEndOf(n));
     }
 
-    
-    
     public static AdjacencyList kruskal(int nodeCount, int edgeCount, int[] nodeI, int[] nodeJ, final float[] weights, int initMethod) {
         NodeSetElement[] setElements = new NodeSetElement[nodeCount];
         NodeSet[] nodeSets = new NodeSet[nodeCount];
@@ -337,16 +342,16 @@ public class AdjacencyList {
         int newNodeI[] = new int[edgeCount];
         int newNodeJ[] = new int[edgeCount];
         float newWeights[] = new float[edgeCount];
-        
-        for(int i=0; i<nodeCount; i++) {
+
+        for (int i = 0; i < nodeCount; i++) {
             setElements[i] = new NodeSetElement(i);
             nodeSets[i] = new NodeSet(setElements[i]);
         }
-        
-        for(int i=0; i<edgeCount; i++) {
+
+        for (int i = 0; i < edgeCount; i++) {
             indices[i] = i;
         }
-        
+
         Arrays.sort(indices, new Comparator<Integer>() {
 
             @Override
@@ -354,13 +359,13 @@ public class AdjacencyList {
                 return (int) (weights[i1] - weights[i2]);
             }
         });
-        
+
         int newEdgeCount = 0;
-        for(int i=0; i<edgeCount; i++) {
+        for (int i = 0; i < edgeCount; i++) {
             NodeSetElement iNode = setElements[nodeI[indices[i]]];
             NodeSetElement jNode = setElements[nodeJ[indices[i]]];
-            
-            if(iNode.setRef != jNode.setRef) {
+
+            if (iNode.setRef != jNode.setRef) {
                 newNodeI[edgeCount] = iNode.value;
                 newNodeJ[edgeCount] = jNode.value;
                 newWeights[edgeCount] = weights[indices[i]];
@@ -368,7 +373,54 @@ public class AdjacencyList {
                 edgeCount++;
             }
         }
-        
+
         return new AdjacencyList(nodeCount, newEdgeCount, newNodeI, newNodeJ, newWeights, initMethod);
     }
+
+    public AdjacencyList mst(int[] targets) {
+        int edgeCount = (targets.length - 1) * (targets.length - 1);
+        int[] nodeI = new int[edgeCount];
+        int[] nodeJ = new int[edgeCount];
+        float[] distances = new float[edgeCount];
+        Dijkstra[] dijkstras = new Dijkstra[targets.length];
+        for (int i = 0; i < targets.length; i++) {
+            dijkstras[i] = new Dijkstra(this, targets[i]);
+            for (int j = 0; j < targets.length; j++) {
+                if (j != i) {
+                    nodeI[i * targets.length - 1 + j] = targets[i];
+                    nodeJ[i * targets.length - 1 + j] = targets[j];
+                    distances[i * targets.length - 1 + j] = dijkstras[i].getDistanceTo(targets[j]);
+                }
+            }
+        }
+        AdjacencyList td = kruskal(targets.length, edgeCount, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
+
+        List<Integer> nodeIList = new ArrayList<>();
+        List<Integer> nodeJList = new ArrayList<>();
+        List<Float> weightList = new ArrayList<>();
+        for (int i = 0; i < targets.length; i++) {
+            for (int j = td.getStartOf(targets[i]); j < td.getEndOf(targets[i]); j++) {
+                int[] path = dijkstras[i].getShortestPathTo(td.getToNode(j));
+                for (int k = 0; k < path.length - 1; k++) {
+                    nodeIList.add(path[k]);
+                    nodeJList.add(path[k + 1]);
+                    weightList.add(getWeight(getEdgeIndex(path[k], path[k + 1])));
+                }
+            }
+        }
+        nodeI = new int[nodeIList.size()];
+        nodeJ = new int[nodeI.length];
+        float[] weights = new float[nodeJ.length];
+        for (int i = 0; i < nodeI.length; i++) {
+            nodeI[i] = nodeIList.get(i);
+            nodeJ[i] = nodeJList.get(i);
+            weights[i] = weightList.get(i);
+        }
+        AdjacencyList t = kruskal(targets.length, edgeCount, nodeI, nodeJ, weights, INIT_PARTLY_COUNTING_SORT);
+        
+        // TODO Remove leaves that not part of targets
+        
+        return t;
+    }
+
 }
