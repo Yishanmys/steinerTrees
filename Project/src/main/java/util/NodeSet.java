@@ -40,7 +40,45 @@ public class NodeSet {
         size = 1;
         firstElement = element;
         element.setRef = this;
-        lastElement = null;
+        lastElement = element;
+    }
+    
+    
+    public NodeSet() {
+        
+    }
+    
+    
+    public int getSize() {
+        return size;
+    }
+    
+    public NodeSetElement getFirstElement() {
+        return firstElement;
+    }
+    
+    public NodeSetElement getLastElement() {
+        return lastElement;
+    }
+    
+    
+    public void addElement(NodeSetElement elem) {
+        elem.setRef = this;
+        
+        if(size == 0) {
+            firstElement = elem;
+            lastElement = elem;
+        } else {
+            lastElement.nextRef = elem;
+            lastElement = elem;
+        }
+        
+        size++;
+    }
+    
+    
+    public void addElement(int value) {
+        addElement(new NodeSetElement(value));
     }
     
     
@@ -67,6 +105,7 @@ public class NodeSet {
         biggerSet.size += smallerSet.size;
         
         NodeSetElement element = smallerSet.firstElement;
+        element.setRef = biggerSet;
         while(element.nextRef != null) {
             element.setRef = biggerSet;
             element = element.nextRef;
