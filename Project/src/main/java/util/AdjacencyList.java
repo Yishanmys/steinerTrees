@@ -174,7 +174,7 @@ public class AdjacencyList {
     public void print() {
         for (int i = 0; i < getNodeCount(); i++) {
             for (int m = getStartOf(i); m < getEndOf(i); m++) {
-                System.out.println("Edge from "+i+" to "+getEndOf(m));
+                System.out.println("Edge from " + i + " to " + getToNode(m));
             }
         }
     }
@@ -369,7 +369,7 @@ public class AdjacencyList {
 
             @Override
             public int compare(Integer i1, Integer i2) {
-                return (int) (weights[i1] - weights[i2]);
+                return weights[i1] > weights[i2] ? 1 : weights[i1] > weights[i2] ? 0 : -1;
             }
         });
 
@@ -391,9 +391,8 @@ public class AdjacencyList {
     }
 
     public SteinerTree mst(int[] targets) {
-        
+
         // Dijkstra from all Targets to all Nodes
-        
         int edgeCount = targets.length * (targets.length - 1);
         int[] nodeI = new int[edgeCount];
         int[] nodeJ = new int[edgeCount];
@@ -411,31 +410,24 @@ public class AdjacencyList {
                 }
             }
         }
-        
+
         // First Kruskal
-        
-        AdjacencyList td = kruskal(getNodeCount(), edgeCount, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
-        
-        td.print();
-        
-        td = new AdjacencyList(9, 3, new int[] {0, 2, 4}, new int[] {2, 4, 6}, new float[] {1f, 0.2f, 0.5f});
-        
+        AdjacencyList td = kruskal(getNodeCount(), nodeI.length, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
+
         // First Kruskal to shortest Paths
-        
         List<Integer> nodeIList = new ArrayList<>();
         List<Integer> nodeJList = new ArrayList<>();
         List<Float> weightList = new ArrayList<>();
         for (int i = 0; i < targets.length; i++) {
-            System.out.print("From Target "+targets[i]);
             for (int j = td.getStartOf(targets[i]); j < td.getEndOf(targets[i]); j++) {
-                System.out.println(" to "+td.getToNode(j));
                 int[] edgesPath = dijkstras[i].getEdgesOfShortestPathTo(td.getToNode(j));
                 int fromNode = targets[i];
                 for (int k = 0; k < edgesPath.length; k++) {
+                    int m = edgesPath[k];
                     nodeIList.add(fromNode);
-                    nodeJList.add(getToNode(k));
-                    fromNode = getToNode(k);
-                    weightList.add(getWeight(k));
+                    nodeJList.add(getToNode(m));
+                    fromNode = getToNode(m);
+                    weightList.add(getWeight(m));
                 }
             }
         }
@@ -447,46 +439,30 @@ public class AdjacencyList {
             nodeJ[i] = nodeJList.get(i);
             weights[i] = weightList.get(i);
         }
-        
-                
-        System.out.print("NodeI: [");
-        for (int o : nodeI) {
-            System.out.print(o+", ");
-        }
-        System.out.println("]");
-        System.out.print("NodeJ: [");
-        for (int o : nodeJ) {
-            System.out.print(o+", ");
-        }
-        System.out.println("]");
-        System.out.print("Weights: [");
-        for (float o : weights) {
-            System.out.print(o+", ");
-        }
-        System.out.println("]");
-        
+
+
         // Second Kruskal
-        
-        AdjacencyList t = kruskal(getNodeCount(), edgeCount, nodeI, nodeJ, weights, INIT_PARTLY_COUNTING_SORT);
+        AdjacencyList t = kruskal(getNodeCount(), nodeI.length, nodeI, nodeJ, weights, INIT_PARTLY_COUNTING_SORT);
 
         // Remove LEAVES 
-        
         int newEdgeCount = t.getEdgeCount();
         boolean removed = true;
         while (removed) {
             removed = false;
             for (int i = 0; i < t.getEdgeCount(); i++) {
                 int toNode = t.getToNode(i);
-                boolean isLeaf = true;
-                for (int j = t.getStartOf(toNode); j < t.getEndOf(toNode) && isLeaf; j++) {
-                    if (t.getToNode(j) >= 0) {
-                        isLeaf = false;
+                if (toNode >= 0 && Arrays.stream(targets).noneMatch(x -> x == toNode)) {
+                    boolean isLeaf = true;
+                    for (int j = t.getStartOf(toNode); j < t.getEndOf(toNode) && isLeaf; j++) {
+                        if (t.getToNode(j) >= 0) {
+                            isLeaf = false;
+                        }
                     }
-                }
-                if (isLeaf) {
-                    t.setToNode(i, -1);
-                    removed = true;
-                    newEdgeCount--;
+                    if (isLeaf) {
+                        t.setToNode(i, -1);
+                        removed = true;
+                        newEdgeCount--;
+                    }
                 }
             }
         }

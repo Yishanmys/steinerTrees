@@ -88,7 +88,7 @@ public class Dijkstra {
         return i;
     }
     
-    public int[] getNodesShortestPathTo(int n) {
+    public int[] getNodesOfShortestPathTo(int n) {
         int[] path = new int[getNodeStepsTo(n)];
         int i = getNodeStepsTo(n)-1;
         while(i >= 0) {
