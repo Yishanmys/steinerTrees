@@ -192,5 +192,27 @@ public class AdjacencyListTest {
         System.out.println("]");
         System.out.println("Total Weight: "+tree.getTotalWeight());
     }
-
+    
+    
+    /**
+     * Test of kruskal method, of class AdjacencyList.
+     */
+    @org.junit.Test
+    public void testKruskal() {
+        int nodeCount = 6;
+        int edgeCount = 10;
+        int nodesI[] = new int[]{ 1,0,3,5,4,1,0,3,5,4 };
+        int nodesJ[] = new int[]{ 0,3,5,4,1,2,2,2,2,2 };
+        float weights[] = new float[]{ 6,5,2,6,3,5,1,5,4,6 };
+        
+        AdjacencyList alist = AdjacencyList.kruskal(nodeCount, edgeCount, nodesI, nodesJ, weights, AdjacencyList.INIT_ARRAY_SORT);
+        float sum = 0;
+        System.out.println("edge count:" + alist.getEdgeCount());
+        for(int i=0; i<alist.getEdgeCount(); i++) {
+            sum += alist.getWeight(i);
+        }
+        
+        System.out.println(sum);
+        assertEquals(sum, 15, 0.0001);
+    }
 }

@@ -371,11 +371,11 @@ public class AdjacencyList {
             NodeSetElement jNode = setElements[nodeJ[indices[i]]];
 
             if (iNode.setRef != jNode.setRef) {
-                newNodeI[edgeCount] = iNode.value;
-                newNodeJ[edgeCount] = jNode.value;
-                newWeights[edgeCount] = weights[indices[i]];
+                newNodeI[newEdgeCount] = iNode.value;
+                newNodeJ[newEdgeCount] = jNode.value;
+                newWeights[newEdgeCount] = weights[indices[i]];
                 NodeSet.union(iNode.setRef, jNode.setRef);
-                edgeCount++;
+                newEdgeCount++;
             }
         }
 
