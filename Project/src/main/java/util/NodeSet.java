@@ -100,16 +100,16 @@ public class NodeSet {
             biggerSet = set1;
         }
         
-        biggerSet.lastElement.nextRef = smallerSet.firstElement;
-        biggerSet.lastElement = smallerSet.lastElement;
-        biggerSet.size += smallerSet.size;
-        
         NodeSetElement element = smallerSet.firstElement;
         element.setRef = biggerSet;
         while(element.nextRef != null) {
-            element.setRef = biggerSet;
             element = element.nextRef;
+            element.setRef = biggerSet;
         }
+        
+        biggerSet.lastElement.nextRef = smallerSet.firstElement;
+        biggerSet.lastElement = smallerSet.lastElement;
+        biggerSet.size += smallerSet.size;
         
         return biggerSet;
     }
