@@ -168,7 +168,29 @@ public class AdjacencyListTest {
 
             assertEquals(expectedResult, result);
         }
+    }
 
+    /**
+     * Test of mst method, of class AdjacencyList.
+     */
+    @org.junit.Test
+    public void testMST() {
+        System.out.println("MST");
+        int[] nodeI = new int[]{0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6};
+        int[] nodeJ = new int[]{1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7};
+        float[] weight = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
+        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights).mst(new int[] {0, 2, 4, 6});
+        System.out.print("NodeI: [");
+        for (int o : tree.getNodeI()) {
+            System.out.print(o+", ");
+        }
+        System.out.println("]");
+        System.out.print("NodeJ: [");
+        for (int o : tree.getNodeJ()) {
+            System.out.print(o+", ");
+        }
+        System.out.println("]");
+        System.out.println("Total Weight: "+tree.getTotalWeight());
     }
 
 }

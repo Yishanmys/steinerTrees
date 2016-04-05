@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -228,6 +229,10 @@ public class AdjacencyList {
         return adjacencyList[m];
     }
 
+    public void setToNode(int m, int n) {
+        adjacencyList[m] = n;
+    }
+
     /**
      * Get the index of the Node from which the given Edge comes. Runs in
      * O(log(N)), so use wisely.
@@ -377,8 +382,8 @@ public class AdjacencyList {
         return new AdjacencyList(nodeCount, newEdgeCount, newNodeI, newNodeJ, newWeights, initMethod);
     }
 
-    public AdjacencyList mst(int[] targets) {
-        int edgeCount = (targets.length - 1) * (targets.length - 1);
+    public SteinerTree mst(int[] targets) {
+        int edgeCount = targets.length * (targets.length - 1);
         int[] nodeI = new int[edgeCount];
         int[] nodeJ = new int[edgeCount];
         float[] distances = new float[edgeCount];
@@ -387,9 +392,9 @@ public class AdjacencyList {
             dijkstras[i] = new Dijkstra(this, targets[i]);
             for (int j = 0; j < targets.length; j++) {
                 if (j != i) {
-                    nodeI[i * targets.length - 1 + j] = targets[i];
-                    nodeJ[i * targets.length - 1 + j] = targets[j];
-                    distances[i * targets.length - 1 + j] = dijkstras[i].getDistanceTo(targets[j]);
+                    nodeI[i * (targets.length - 1) + j] = targets[i];
+                    nodeJ[i * (targets.length - 1) + j] = targets[j];
+                    distances[i * (targets.length - 1) + j] = dijkstras[i].getDistanceTo(targets[j]);
                 }
             }
         }
@@ -400,11 +405,13 @@ public class AdjacencyList {
         List<Float> weightList = new ArrayList<>();
         for (int i = 0; i < targets.length; i++) {
             for (int j = td.getStartOf(targets[i]); j < td.getEndOf(targets[i]); j++) {
-                int[] path = dijkstras[i].getShortestPathTo(td.getToNode(j));
-                for (int k = 0; k < path.length - 1; k++) {
-                    nodeIList.add(path[k]);
-                    nodeJList.add(path[k + 1]);
-                    weightList.add(getWeight(getEdgeIndex(path[k], path[k + 1])));
+                int[] edgesPath = dijkstras[i].getEdgesOfShortestPathTo(td.getToNode(j));
+                int fromNode = targets[i];
+                for (int k = 0; k < edgesPath.length; k++) {
+                    nodeIList.add(fromNode);
+                    nodeJList.add(getToNode(k));
+                    fromNode = getToNode(k);
+                    weightList.add(getWeight(k));
                 }
             }
         }
@@ -416,11 +423,45 @@ public class AdjacencyList {
             nodeJ[i] = nodeJList.get(i);
             weights[i] = weightList.get(i);
         }
-        AdjacencyList t = kruskal(targets.length, edgeCount, nodeI, nodeJ, weights, INIT_PARTLY_COUNTING_SORT);
-        
-        // TODO Remove leaves that not part of targets
-        
-        return t;
+        AdjacencyList t = kruskal(getNodeCount(), edgeCount, nodeI, nodeJ, weights, INIT_PARTLY_COUNTING_SORT);
+
+        int newEdgeCount = t.getEdgeCount();
+        boolean removed = true;
+        while (removed) {
+            removed = false;
+            for (int i = 0; i < t.getEdgeCount(); i++) {
+                int toNode = t.getToNode(i);
+                boolean isLeaf = true;
+                for (int j = t.getStartOf(toNode); j < t.getEndOf(toNode) && isLeaf; j++) {
+                    if (t.getToNode(j) >= 0) {
+                        isLeaf = false;
+                    }
+                }
+                if (isLeaf) {
+                    t.setToNode(i, -1);
+                    removed = true;
+                    newEdgeCount--;
+                }
+            }
+        }
+
+        nodeI = new int[newEdgeCount];
+        nodeJ = new int[newEdgeCount];
+        float totalWeight = 0;
+        int current = 0;
+        for (int i = 0; i < t.getNodeCount(); i++) {
+            for (int m = t.getStartOf(i); m < t.getEndOf(i); m++) {
+                int j = t.getToNode(m);
+                if (j >= 0) {
+                    nodeI[current] = i;
+                    nodeJ[current] = j;
+                    totalWeight += t.getWeight(m);
+                    current++;
+                }
+            }
+        }
+
+        return new SteinerTree(nodeI, nodeJ, totalWeight);
     }
 
 }

@@ -15,13 +15,14 @@ import java.util.List;
  */
 public class Dijkstra {
 
-    private final int[] predecessors;
+    private final int[] predecessors, preEdges;
     private final float[] distances;
     private final int source;
 
     public Dijkstra(AdjacencyList adjacencyList, int source) {
         this.source = source;
         predecessors = new int[adjacencyList.getNodeCount()];
+        preEdges = new int[adjacencyList.getNodeCount()];
         distances = new float[adjacencyList.getNodeCount()];
         boolean[] visited = new boolean[adjacencyList.getNodeCount()];
         distances[source] = 0;
@@ -34,12 +35,14 @@ public class Dijkstra {
         }
         Collections.shuffle(indices);
         
+        FibonacciHeap.Entry<Integer>[] entries = new FibonacciHeap.Entry[adjacencyList.getNodeCount()];
         for (int i : indices) {
             if (i != source) {
                 distances[i] = Float.POSITIVE_INFINITY;
                 predecessors[i] = -1;
+                preEdges[i] = -1;
             }
-            fibonacciHeap.enqueue(i, distances[i]);
+            entries[i] = fibonacciHeap.enqueue(i, distances[i]);
         }
         
         while(!fibonacciHeap.isEmpty()) {
@@ -53,7 +56,8 @@ public class Dijkstra {
                     if(alt < distances[v]) {
                         distances[v] = alt;
                         predecessors[v] = u;
-                        fibonacciHeap.decreaseKey(entry, alt);
+                        preEdges[v] = edge;
+                        fibonacciHeap.decreaseKey(entries[v], alt);
                     }
                 }
             }
@@ -66,6 +70,10 @@ public class Dijkstra {
     
     public int getPredecessorOf(int n) {
         return predecessors[n];
+    }
+
+    public int getPreEdgeOf(int n) {
+        return preEdges[n];
     }
     
     public int getNodeStepsTo(int n) {
@@ -80,12 +88,23 @@ public class Dijkstra {
         return i;
     }
     
-    public int[] getShortestPathTo(int n) {
+    public int[] getNodesShortestPathTo(int n) {
         int[] path = new int[getNodeStepsTo(n)];
         int i = n-1;
         while(i >= 0) {
             path[i] = n;
             n = predecessors[n];
+            i--;
+        }
+        return path;
+    }
+    
+    public int[] getEdgesOfShortestPathTo(int n) {
+        int[] path = new int[getNodeStepsTo(n)];
+        int i = n-1;
+        while(i >= 0) {
+            path[i] = n;
+            n = preEdges[n];
             i--;
         }
         return path;
