@@ -90,7 +90,7 @@ public class Dijkstra {
     
     public int[] getNodesShortestPathTo(int n) {
         int[] path = new int[getNodeStepsTo(n)];
-        int i = n-1;
+        int i = getNodeStepsTo(n)-1;
         while(i >= 0) {
             path[i] = n;
             n = predecessors[n];
@@ -101,10 +101,10 @@ public class Dijkstra {
     
     public int[] getEdgesOfShortestPathTo(int n) {
         int[] path = new int[getNodeStepsTo(n)];
-        int i = n-1;
+        int i = getNodeStepsTo(n)-1;
         while(i >= 0) {
-            path[i] = n;
-            n = preEdges[n];
+            path[i] = preEdges[n];
+            n = predecessors[n];
             i--;
         }
         return path;

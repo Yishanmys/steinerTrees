@@ -171,6 +171,14 @@ public class AdjacencyList {
         }
     }
 
+    public void print() {
+        for (int i = 0; i < getNodeCount(); i++) {
+            for (int m = getStartOf(i); m < getEndOf(i); m++) {
+                System.out.println("Edge from "+i+" to "+getEndOf(m));
+            }
+        }
+    }
+
     /**
      * Store the toNode and the Weight of this edge. Only used on Initialization
      * for INIT_PARTLY_COUNTING_SORT.
@@ -383,28 +391,44 @@ public class AdjacencyList {
     }
 
     public SteinerTree mst(int[] targets) {
+        
+        // Dijkstra from all Targets to all Nodes
+        
         int edgeCount = targets.length * (targets.length - 1);
         int[] nodeI = new int[edgeCount];
         int[] nodeJ = new int[edgeCount];
         float[] distances = new float[edgeCount];
         Dijkstra[] dijkstras = new Dijkstra[targets.length];
+        int counter = 0;
         for (int i = 0; i < targets.length; i++) {
             dijkstras[i] = new Dijkstra(this, targets[i]);
             for (int j = 0; j < targets.length; j++) {
                 if (j != i) {
-                    nodeI[i * (targets.length - 1) + j] = targets[i];
-                    nodeJ[i * (targets.length - 1) + j] = targets[j];
-                    distances[i * (targets.length - 1) + j] = dijkstras[i].getDistanceTo(targets[j]);
+                    nodeI[counter] = targets[i];
+                    nodeJ[counter] = targets[j];
+                    distances[counter] = dijkstras[i].getDistanceTo(targets[j]);
+                    counter++;
                 }
             }
         }
-        AdjacencyList td = kruskal(targets.length, edgeCount, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
-
+        
+        // First Kruskal
+        
+        AdjacencyList td = kruskal(getNodeCount(), edgeCount, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
+        
+        td.print();
+        
+        td = new AdjacencyList(9, 3, new int[] {0, 2, 4}, new int[] {2, 4, 6}, new float[] {1f, 0.2f, 0.5f});
+        
+        // First Kruskal to shortest Paths
+        
         List<Integer> nodeIList = new ArrayList<>();
         List<Integer> nodeJList = new ArrayList<>();
         List<Float> weightList = new ArrayList<>();
         for (int i = 0; i < targets.length; i++) {
+            System.out.print("From Target "+targets[i]);
             for (int j = td.getStartOf(targets[i]); j < td.getEndOf(targets[i]); j++) {
+                System.out.println(" to "+td.getToNode(j));
                 int[] edgesPath = dijkstras[i].getEdgesOfShortestPathTo(td.getToNode(j));
                 int fromNode = targets[i];
                 for (int k = 0; k < edgesPath.length; k++) {
@@ -423,8 +447,30 @@ public class AdjacencyList {
             nodeJ[i] = nodeJList.get(i);
             weights[i] = weightList.get(i);
         }
+        
+                
+        System.out.print("NodeI: [");
+        for (int o : nodeI) {
+            System.out.print(o+", ");
+        }
+        System.out.println("]");
+        System.out.print("NodeJ: [");
+        for (int o : nodeJ) {
+            System.out.print(o+", ");
+        }
+        System.out.println("]");
+        System.out.print("Weights: [");
+        for (float o : weights) {
+            System.out.print(o+", ");
+        }
+        System.out.println("]");
+        
+        // Second Kruskal
+        
         AdjacencyList t = kruskal(getNodeCount(), edgeCount, nodeI, nodeJ, weights, INIT_PARTLY_COUNTING_SORT);
 
+        // Remove LEAVES 
+        
         int newEdgeCount = t.getEdgeCount();
         boolean removed = true;
         while (removed) {
