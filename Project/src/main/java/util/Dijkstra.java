@@ -18,8 +18,12 @@ public class Dijkstra {
     private final int[] predecessors, preEdges;
     private final float[] distances;
     private final int source;
-
+    
     public Dijkstra(AdjacencyList adjacencyList, int source) {
+        this(adjacencyList, source, new boolean[adjacencyList.getNodeCount()], 0);
+    }
+
+    public Dijkstra(AdjacencyList adjacencyList, int source, boolean[] isTarget, int targetCount) {
         this.source = source;
         predecessors = new int[adjacencyList.getNodeCount()];
         preEdges = new int[adjacencyList.getNodeCount()];
@@ -29,14 +33,15 @@ public class Dijkstra {
         FibonacciHeap<Integer> fibonacciHeap = new FibonacciHeap<>();
         
         // For randomly taking nodes with same prio
-        List<Integer> indices = new ArrayList<>();
-        for (int i = 0; i < predecessors.length; i++) {
-            indices.add(i);
-        }
-        Collections.shuffle(indices);
+//        List<Integer> indices = new ArrayList<>();
+//        for (int i = 0; i < predecessors.length; i++) {
+//            indices.add(i);
+//        }
+//        Collections.shuffle(indices);
         
         FibonacciHeap.Entry<Integer>[] entries = new FibonacciHeap.Entry[adjacencyList.getNodeCount()];
-        for (int i : indices) {
+        for (int i = 0; i < predecessors.length; i++) {
+//        for (int i : indices) { // for random order
             if (i != source) {
                 distances[i] = Float.POSITIVE_INFINITY;
                 predecessors[i] = -1;
@@ -49,6 +54,12 @@ public class Dijkstra {
             FibonacciHeap.Entry<Integer> entry = fibonacciHeap.dequeueMin();
             int u = entry.getValue();
             visited[u] = true;
+            if(isTarget[u]) {
+                targetCount--;
+                if(targetCount<=0) {
+                    break;
+                }
+            }
             for (int edge = adjacencyList.getStartOf(u); edge < adjacencyList.getEndOf(u); edge++) {
                 int v = adjacencyList.getToNode(edge);
                 if(!visited[v]) {
