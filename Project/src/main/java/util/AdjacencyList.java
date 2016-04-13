@@ -9,10 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +32,8 @@ public class AdjacencyList {
      * Creates a new AdjacencyList based on the following input with the given
      * initMethod.
      *
-     * @param nodeCount numer of Nodes -> N
-     * @param edgeCount numer of Edges -> M
+     * @param nodeCount number of Nodes -> N
+     * @param edgeCount number of Edges -> M
      * @param nodeI represents an edge from nodeI[m] to nodeJ[m]
      * @param nodeJ represents an edge from nodeI[m] to nodeJ[m]
      * @param weights the weight of edge m
@@ -48,8 +46,8 @@ public class AdjacencyList {
      * Creates a new AdjacencyList based on the following input with the given
      * initMethod.
      *
-     * @param nodeCount numer of Nodes -> N
-     * @param edgeCount numer of Edges -> M
+     * @param nodeCount number of Nodes -> N
+     * @param edgeCount number of Edges -> M
      * @param nodeI represents an edge from nodeI[m] to nodeJ[m]
      * @param nodeJ represents an edge from nodeI[m] to nodeJ[m]
      * @param weights the weight of edge m
@@ -493,6 +491,7 @@ public class AdjacencyList {
 
         nodeI2 = new int[newEdgeCount];
         nodeJ2 = new int[newEdgeCount];
+        float[] weights2 = new float[newEdgeCount];
         float totalWeight = 0;
         int current = 0;
         for (int i = 0; i < t.getNodeCount(); i++) {
@@ -501,13 +500,14 @@ public class AdjacencyList {
                 if (j >= 0) {
                     nodeI2[current] = i;
                     nodeJ2[current] = j;
+                    weights2[current] = t.getWeight(m);
                     totalWeight += t.getWeight(m);
                     current++;
                 }
             }
         }
 
-        return new SteinerTree(nodeI2, nodeJ2, totalWeight);
+        return new SteinerTree(nodeI2, nodeJ2, weights2, totalWeight);
     }
     
 }

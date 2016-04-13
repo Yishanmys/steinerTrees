@@ -12,11 +12,13 @@ package util;
 public class SteinerTree {
 
     private int[] nodeI, nodeJ;
+    private float[] weights;
     private float totalWeight;
 
-    public SteinerTree(int[] nodeI, int[] nodeJ, float totalWeight) {
+    public SteinerTree(int[] nodeI, int[] nodeJ, float[] weights, float totalWeight) {
         this.nodeI = nodeI;
         this.nodeJ = nodeJ;
+        this.weights = weights;
         this.totalWeight = totalWeight;
     }
 
@@ -26,6 +28,10 @@ public class SteinerTree {
 
     public int[] getNodeJ() {
         return nodeJ;
+    }
+
+    public float[] getWeights() {
+        return weights;
     }
 
     public float getTotalWeight() {
