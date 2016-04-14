@@ -176,10 +176,14 @@ public class AdjacencyListTest {
     @org.junit.Test
     public void testMST() {
         System.out.println("MST");
-        int[] nodeI = new int[]{0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7};
-        int[] nodeJ = new int[]{1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7, 0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6};
-        float[] weights = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f, 0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
-        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights, AdjacencyList.INIT_PARTLY_COUNTING_SORT).mst(new int[] {0, 2, 4, 6});
+//        int[] nodeI = new int[]{0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7};
+        int[] nodeI = new int[]{4, 1, 0, 1, 2, 1, 3, 1};
+//        int[] nodeJ = new int[]{1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7, 0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6};
+        int[] nodeJ = new int[]{1, 4, 1, 0, 1, 2, 1, 3};
+//        float[] weights = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f, 0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
+        float[] weights = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+//        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights, AdjacencyList.INIT_PARTLY_COUNTING_SORT).mst(new int[] {0, 2, 4, 6});
+        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights).mst(new int[] {0, 1, 2, 3});
         System.out.print("NodeI: [");
         for (int o : tree.getNodeI()) {
             System.out.print(o+", ");
