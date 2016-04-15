@@ -269,7 +269,7 @@ public class AdjacencyList {
     }
 
     /**
-     * Get the weight of Edge with index m. Runs in O(1);
+     * Get the weight of Edge with index m. Runs in O(1).
      *
      * @param m the edge
      * @return the weight
@@ -289,10 +289,22 @@ public class AdjacencyList {
         return getEndOf(n) - getStartOf(n);
     }
 
+    /**
+     * The number of nodes.
+     * Runs in O(1).
+     * 
+     * @return the nodecount
+     */
     public int getNodeCount() {
         return listStarts.length;
     }
 
+    /**
+     * The number of edges.
+     * Runs in O(1).
+     * 
+     * @return the edgecount
+     */
     public int getEdgeCount() {
         return adjacencyList.length;
     }
@@ -321,6 +333,13 @@ public class AdjacencyList {
         return -1;
     }
 
+    /**
+     * The edges of node n as an Iterable.
+     * This is much slower than for(int i=getStartOf(n); i&lt;getEndOf(n); i++);
+     * 
+     * @param n the from node
+     * @return the edges as an Iterable.
+     */
     public Iterable<Integer> getEdgesFrom(int n) {
         final int start = getStartOf(n);
         final int end = getEndOf(n);
@@ -348,6 +367,13 @@ public class AdjacencyList {
         };
     }
 
+    /**
+     * All edges from node n as an IntStream.
+     * This is slightly (with a constant amount of time) slower than for(int i=getStartOf(n); i&lt;getEndOf(n); i++); 
+     * 
+     * @param n the from node
+     * @return the edges as IntStream
+     */
     public IntStream streamEdgesFrom(int n) {
         return Arrays.stream(adjacencyList, getStartOf(n), getEndOf(n));
     }
@@ -394,10 +420,21 @@ public class AdjacencyList {
         return new AdjacencyList(nodeCount, newEdgeCount, newNodeI, newNodeJ, newWeights, initMethod);
     }
 
+    /**
+     * Retruns a SteinerTree which is a 2-approximation of the minimum steiner
+     * tree of the graph represented by this AdjacencyList. The resulting
+     * SteinerTree is in fact a connected, directed sub graph which contains all
+     * targets and nodes in the shortest path between the targets. The total
+     * weight of all edges is approximately as low as possible.
+     *
+     * @param targets The targets that have to be in the resulting tree (graph)
+     * @return The SteinerTree representing a graph in the form of to node
+     * arrays. The graph is described via the edges from nodeI[n] to nodeJ[n].
+     */
     public SteinerTree mst(final int[] targets) {
 
         final boolean[] isTarget = new boolean[getNodeCount()];
-        
+
         // Dijkstra from all Targets to all Nodes
         int edgeCount = targets.length * (targets.length - 1);
         final int[] nodeI = new int[edgeCount];
@@ -509,5 +546,5 @@ public class AdjacencyList {
 
         return new SteinerTree(nodeI2, nodeJ2, weights2, totalWeight);
     }
-    
+
 }

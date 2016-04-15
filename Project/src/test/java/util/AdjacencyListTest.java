@@ -183,7 +183,7 @@ public class AdjacencyListTest {
 //        float[] weights = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f, 0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
         float[] weights = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 //        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights, AdjacencyList.INIT_PARTLY_COUNTING_SORT).mst(new int[] {0, 2, 4, 6});
-        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights).mst(new int[] {0, 1, 2, 3});
+        SteinerTree tree = new AdjacencyList(5, nodeI.length, nodeI, nodeJ, weights).mst(new int[] {0, 1, 2, 3});
         System.out.print("NodeI: [");
         for (int o : tree.getNodeI()) {
             System.out.print(o+", ");
