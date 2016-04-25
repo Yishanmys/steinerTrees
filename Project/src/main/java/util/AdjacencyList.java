@@ -551,7 +551,7 @@ public class AdjacencyList {
      * Generates a complete graph from target nodes and distances between them.
      * This is used in phase I of the prize-collecting algorithm.
      * @param targets   The target nodes.
-     * @param dijkstras all-to-all Dijkstras, for distances between nodes.
+     * @param ds        all-to-all Dijkstras, for distances between nodes.
      * @return 
      */
     public static AdjacencyList toCompleteGraph(int[] targets, Dijkstra[] ds)
@@ -600,4 +600,13 @@ public class AdjacencyList {
         return completeGraph;
     }
     
+    /**
+     * Returns all nodes in this graph.
+     * @return int[] of all nodes
+     */
+    public int[] getNodes()
+    {
+        // TODO
+        return null;
+    }
 }

@@ -8,9 +8,10 @@ package util;
  */
 public class PrizeCollecting
 {
-    public static void MSTPCST(AdjacencyList g, boolean[] isTarget)
+    public static void MSTPCST(AdjacencyList adjList, boolean[] isTarget)
     {
         /* Init */
+        AdjacencyList g = adjList;
         
         int targetCount = 0;
         for (int i = 0; i < isTarget.length; i++)
@@ -45,7 +46,8 @@ public class PrizeCollecting
             /* Construct complete Graph G' = (V', E') where V' = S and 
                and each arc in E' corresponds to the shortest path in G */
             Dijkstra[] dijkstras = Dijkstra.allToAll(g);
-            AdjacencyList g_prime = AdjacencyList.toCompleteGraph(targets, dijkstras);
+            AdjacencyList g_prime = AdjacencyList.toCompleteGraph(targets,
+                                                                  dijkstras);
             
             /* Solve MST on G' and obtain tree T */
             SteinerTree t = g_prime.mst(targets);
@@ -54,11 +56,13 @@ public class PrizeCollecting
             c_prime = t.getTotalWeight();
             
             /* Convert T into original Graph G and obtain a subgraph T' */
-            AdjacencyList t_prime = t.toGraph();
+            AdjacencyList t_prime = t.toGraph(dijkstras);
             
             /* S <- all nodes in T' */
             targets = new int[t_prime.getNodeCount()];
-            // TODO: Populate, transfer
+            targets = t_prime.getNodes();
+            
+            g = t_prime;
         }
         
         /* Phase II */
