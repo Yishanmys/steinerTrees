@@ -20,6 +20,13 @@
 \section{Verwendeter Algorithmus}
 
 \section{Implementation}
+\subsection{Repräsentation des Graphen}
+Zur Repräsentation des Graphen werden zwei Datenstrukturen verwendet.\\
+\\
+Zum einen eine Form die als Eingabe, Ausgabe und zur Berechnung des Spannbaums verwendet wird. Diese besteht aus drei Arrays, $nodeI$, $nodeJ$ und $weights$, sowie der Anzahl der Knoten ($nodeCount$) und der Kanten ($edgeCount$). Der Graph enthält alle Knoten mit Index $n$ mit $ 0 \le n < nodeCount$ und alle gerichteten Kanten von Knoten $nodeI[i]$ zu $nodeJ[i]$ $\forall 0 \le i < edgeCount$. Das Gewicht der Kante $i$ wird dabei durch $weights[i]$ beschrieben.\\
+\\
+Zum anderen arbeitet die Dijkstra-Implementation mit einer Darstellung durch Adjazenslisten.
+
 
 \section{Ergebnisse und Diskussion}
 
