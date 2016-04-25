@@ -546,5 +546,58 @@ public class AdjacencyList {
 
         return new SteinerTree(nodeI2, nodeJ2, weights2, totalWeight);
     }
-
+    
+    /**
+     * Generates a complete graph from target nodes and distances between them.
+     * This is used in phase I of the prize-collecting algorithm.
+     * @param targets   The target nodes.
+     * @param dijkstras all-to-all Dijkstras, for distances between nodes.
+     * @return 
+     */
+    public static AdjacencyList toCompleteGraph(int[] targets, Dijkstra[] ds)
+    {
+        /* There are as many nodes as there are targets. Steiner nodes are not 
+           included in this representation. */
+        int nodeCount = targets.length;
+        
+        /* There are n*(n-1) edges in a complete, directed graph with n nodes */
+        int edgeCount = nodeCount * (nodeCount-1);
+        
+        int[]   nodeI   = new int  [edgeCount];
+        int[]   nodeJ   = new int  [edgeCount];
+        float[] weights = new float[edgeCount];
+        
+        /* Fill nodeI and nodeJ like this (example for n = 5) */
+        
+        /* nodeI = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4] */
+        /* nodeJ = [1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3] */
+        
+        for (int i = 0; i < nodeCount; i++)
+        {
+            int trgt = 0;
+            
+            for (int j = 0; j < (nodeCount - 1); j++)
+            {
+                /* no edges from a node to itself */
+                if (trgt == i) { trgt++; }
+                
+                nodeI  [(i * nodeCount) + j] = i;
+                nodeJ  [(i * nodeCount) + j] = trgt;
+                weights[(i * nodeCount) + j] = ds[i].getDistanceTo(trgt);
+                
+                trgt++;
+            }
+        }
+        
+        /* Generate complete Graph from the data just computed */
+        AdjacencyList completeGraph = new AdjacencyList(nodeCount,
+                                                        edgeCount,
+                                                        nodeI,
+                                                        nodeJ,
+                                                        weights);
+              
+        /* Return complete Graph */
+        return completeGraph;
+    }
+    
 }

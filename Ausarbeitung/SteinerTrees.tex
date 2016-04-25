@@ -1,5 +1,6 @@
 \documentclass[a4paper,10pt]{article}
 \usepackage[utf8]{inputenc}
+\usepackage{listings}
 
 %opening
 \title{2-Approximation des Pricecollecting-Steintree-Problems}
@@ -18,14 +19,41 @@
 \section{Einleitung}
 
 \section{Verwendeter Algorithmus}
+Der minimimale Steinerbaum wird mithilfe des folgenden Algorithmuses approximiert:\\
+Input: Ein Graph und die Liste von Zielknoten (Targets)\\
 
 \section{Implementation}
 \subsection{Repräsentation des Graphen}
 Zur Repräsentation des Graphen werden zwei Datenstrukturen verwendet.\\
 \\
-Zum einen eine Form die als Eingabe, Ausgabe und zur Berechnung des Spannbaums verwendet wird. Diese besteht aus drei Arrays, $nodeI$, $nodeJ$ und $weights$, sowie der Anzahl der Knoten ($nodeCount$) und der Kanten ($edgeCount$). Der Graph enthält alle Knoten mit Index $n$ mit $ 0 \le n < nodeCount$ und alle gerichteten Kanten von Knoten $nodeI[i]$ zu $nodeJ[i]$ $\forall 0 \le i < edgeCount$. Das Gewicht der Kante $i$ wird dabei durch $weights[i]$ beschrieben.\\
+Zum einen eine Form (Kanten-Array-Form) die als Eingabe, Ausgabe und zur Berechnung des Spannbaums verwendet wird. Diese besteht aus drei Arrays, $nodeI$, $nodeJ$ und $weights$, sowie der Anzahl der Knoten ($nodeCount$) und der Kanten ($edgeCount$). Der Graph enthält alle Knoten mit Index $n$ mit $ 0 \le n < nodeCount$ und alle gerichteten Kanten von Knoten $nodeI[i]$ zu $nodeJ[i]$ $\forall 0 \le i < edgeCount$. Das Gewicht der Kante $i$ wird dabei durch $weights[i]$ beschrieben.\\
 \\
-Zum anderen arbeitet die Dijkstra-Implementation mit einer Darstellung durch Adjazenslisten.
+Zum anderen arbeitet die Dijkstra-Implementation mit einer Darstellung durch Adjazenslisten. Hierbei werden zwei Int-Arrays verwendet. Das erste ($adjacencyList$) ist eine Aneinanderreihung aller Adjazenslisten und hat somit die Länge $edgeCount$. Das zweite ($listStart$) speichert an der Stelle $i$ den Startpunkt der Adjazensliste von Knoten $i$ innerhalb des ersten Arrays. Formal ist die Menge der Kanten also:\\
+$\{ (i,j) | 0 \le i < nodeCount, 
+j \in \{adjacencyList[n]|listStart[i] \le n < endOf(i)\}$\\ mit $endOf(i) = 
+\left\{
+	\begin{array}{ll}
+		listStart[i+1]  & \mbox{falls } i+1 < nodeCount \\
+		edgeCount & \mbox{falls } i+1 \ge nodeCount
+	\end{array}
+\right.$.
+
+\subsubsection{Konvertierung von Kanten-Array-Form in Adjazenslisten-Form}
+Es wurden drei Algorithmen zur Konvertierung implementiert und auf ihre Effiziens getestet.\\
+\textbf{ArraySort}\\
+\textbf{CountingSort}\\
+\textbf{PartlyCountingSort}\\
+
+\subsubsection{Iteration über Folgeknoten}
+Um über die Folgeknoten eines Knotens $i$ zu iterieren gibt es verschiedene Möglichkeiten. Die effizienteste nutzt eine for-Schleife über die gesamte Adjazensliste vom Start- bis Endpunkt von $i$:
+\begin{lstlisting}
+ for(int m=getStartOf(i); m<getEndOf(i); m++) {
+    int j = getToNode(m);
+    float weight = getWeight(m);
+ }
+\end{lstlisting}
+
+\subsection{Dijkstra}
 
 
 \section{Ergebnisse und Diskussion}
