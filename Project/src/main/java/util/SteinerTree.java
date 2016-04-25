@@ -5,8 +5,8 @@
  */
 package util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -14,9 +14,9 @@ import java.util.Set;
  */
 public class SteinerTree {
 
-    private int[] nodeI, nodeJ;
+    private int[]   nodeI, nodeJ;
     private float[] weights;
-    private float totalWeight;
+    private float   totalWeight;
 
     public SteinerTree(int[] nodeI, int[] nodeJ, float[] weights, float totalWeight) {
         this.nodeI = nodeI;
@@ -44,32 +44,93 @@ public class SteinerTree {
     /**
      * Creates an AdjacencyList (also known as a Graph) from this SteinerTree.
      * This is needed for the prize collecting algorithm.
+     * @param dijkstras   all-to-all dijkstras
      * @return The graph, in form of an AdjacencyList.
      */
-    public AdjacencyList toGraph()
-    {
-        // TODO: INSERT NODES & EDGES FROM ORIGINAL GRAPH (not correct yet)
+    public AdjacencyList toGraph(Dijkstra[] dijkstras)
+    {        
+        /* create and clear lists for new weights, nodeI and nodeJ */
+        ArrayList<Integer> newNodeI   = new ArrayList<>();
+        ArrayList<Integer> newNodeJ   = new ArrayList<>();
+        ArrayList<Float>   newWeights = new ArrayList<>();
         
-        /* Add all nodes to set to compute nodecount. Sufficiently efficient? */
-        Set<Integer> nodes = new HashSet<Integer>();
+        newNodeI.clear();
+        newNodeJ.clear();
+        newWeights.clear();
+        
+        /* Every edge in this.nodeI/this.nodeJ represents a path in the
+           original Graph. We need to add all edges from that original 
+           graph plus their according weights to a new nodeI and nodeJ */
         for (int i = 0; i < nodeI.length; i++)
         {
-            /* nodeI and nodeJ ought to have the same length,
-               so this shouldn't miss anything or misstep. */
-            nodes.add(nodeI[i]);
-            nodes.add(nodeJ[i]);
+            /* One direction (hurr hurr) */
+            
+            /* get complete arc from Dijkstra */
+            int[] arc = dijkstras[nodeI[i]].getNodesOfShortestPathTo(nodeJ[i]);
+            
+            int source, target;
+            
+            /* Step by step add all edges along arc and corresponding weights */
+            for (int j = 0; j < (arc.length-1); j++)
+            {
+                source  = arc[j];
+                target = arc[j+1];
+                
+                newNodeI.add(source);
+                newNodeJ.add(target);
+                newWeights.add(dijkstras[source].getDistanceTo(target));
+            }
+            
+            /* Other direction */
+            arc = dijkstras[nodeJ[i]].getNodesOfShortestPathTo(nodeI[i]);
+            
+            for (int j = 0; j < (arc.length-1); j++)
+            {
+                source  = arc[j];
+                target = arc[j+1];
+                
+                newNodeI.add(source);
+                newNodeJ.add(target);
+                newWeights.add(dijkstras[source].getDistanceTo(target));
+            }
         }
         
-        /* get counts from obvious sources */
+        /* Add all nodes to set to avoid duplicates */
+        HashSet<Integer> nodes = new HashSet<>();
+                
+        for (int i = 0; i < newNodeI.size(); i++)
+        {
+            nodes.add(newNodeI.get(i));
+            nodes.add(newNodeJ.get(i));
+        }
+        
+        /* Copy manually because Java can automatically convert
+           Integer to int but apparently not Integer[] to int[]... */
+        
+        int[] nuI = new int[newNodeI.size()];
+        int[] nuJ = new int[newNodeJ.size()];
+        
+        for (int i = 0; i < newNodeI.size(); i++)
+        {
+            nuI[i] = newNodeI.get(i);
+            nuJ[i] = newNodeJ.get(i);
+        }
+        
+        /* Same for weights */
+        float[] nuWeights = new float[newWeights.size()];
+        for (int i = 0; i < nuWeights.length; i++)
+            { nuWeights[i] = newWeights.get(i); }
+        
+        /* get Counts from obvious sources */
         int nodeCount = nodes.size();
-        int edgeCount = 0;
+        int edgeCount = newWeights.size();
         
         /* Create Graph (that is to say "AdjacencyList") from data */
         AdjacencyList graph = new AdjacencyList(nodeCount,
                                                 edgeCount,
-                                                this.nodeI, 
-                                                this.nodeJ,
-                                                this.weights);
+                                                nuI, 
+                                                nuJ,
+                                                nuWeights);
         
         /* return freshly created graph */
         return graph;
