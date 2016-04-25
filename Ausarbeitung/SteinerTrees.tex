@@ -41,11 +41,21 @@ j \in \{adjacencyList[n]|listStart[i] \le n < endOf(i)\}$\\ mit $endOf(i) =
 \subsubsection{Konvertierung von Kanten-Array-Form in Adjazenslisten-Form}
 Es wurden drei Algorithmen zur Konvertierung implementiert und auf ihre Effiziens getestet.\\
 \textbf{ArraySort}\\
+Dieser Algorithmus nutzt den bereits implementierten Sortieralgorithmus von Java, wobei der Comperator überschrieben wurde,
+sodass die Kanten erst entsprechend dem Startknoten und zweitranging nach dem Zielknoten sortiert werden. Dieser Algorithmus arbeitet
+besonders effizient, falls die Eingabe bereits vorsortiert ist. Die allgemeine Effiziensklasse ist jedoch $O(M^2)$ wobei $M$ der Anzahl der Kanten beschreibt.\\
 \textbf{CountingSort}\\
+Dieser Algorithmus macht sich zu Nutzen, dass es sich beim Sortieren um einen endlichen, abzählbaren Wertebereich ($0 \le n < N$) handelt.
+Durch die temporäre überführung in eine Adjazensmatrix wird die Optimale Effiziensklasse $O(N^2)$ mit $N$ der Anzahl der Knoten erreicht.
+Dies geschieht jedoch auf Kosten des Speicherbedarfs welcher in jedem Fall $N^2$ beträgt.\\
 \textbf{PartlyCountingSort}\\
+Da der CountingSort Algorithmus gerade für spärliche Graphen (Diche $< 1\%$) nicht sinnvoll ist, arbeitet dieser Algorithmus etwas dynamischer.
+Für jeden Knoten wird eine Ajdazensliste in Form einer ArrayList mit den entsprechenden Folgeknoten gefüllt. Jede dieser Listen wird anschließend sortiert
+und anschließend in das adjacencyList-Array geschrieben. Die Effiziensklasse ist $O(N^3)$, jedoch im zu erwartenden Durchschnitt am besten geeignet.
 
 \subsubsection{Iteration über Folgeknoten}
-Um über die Folgeknoten eines Knotens $i$ zu iterieren gibt es verschiedene Möglichkeiten. Die effizienteste nutzt eine for-Schleife über die gesamte Adjazensliste vom Start- bis Endpunkt von $i$:
+Um über die Folgeknoten eines Knotens $i$ zu iterieren gibt es verschiedene Möglichkeiten.
+Die effizienteste nutzt eine for-Schleife über die gesamte Adjazensliste vom Start- bis Endpunkt von $i$:
 \begin{lstlisting}
  for(int m=getStartOf(i); m<getEndOf(i); m++) {
     int j = getToNode(m);
@@ -54,7 +64,13 @@ Um über die Folgeknoten eines Knotens $i$ zu iterieren gibt es verschiedene Mö
 \end{lstlisting}
 
 \subsection{Dijkstra}
-
+Da der Dijkstra-Algorithmus als Rückgabewert die kürzesten Pfade von einem Startknoten $n$ zu allen anderen Knoten des Graphens besitzt,
+wurde hierfür eine eigene Klasse entworfen, welche nicht nur als Behälter dient, sondern in Form des Konstruktors auch den Algorithmus implementiert.
+Der Konstruktor erwartet somit einen Graphen, repräsentiert als AdjacencyList, und einen Startknoten. Zusätzlich können die Targets des Steinerbaums
+angegeben werden, um die Rechenzeit des Dijkstra's zu reduzieren. In diesem Fall ist jedoch nur noch gewährleistet, dass die kürzesten Pfade vom Startknoten
+zu allen Targets berechnet wurde und nicht mehr zu allen Knoten.\\
+Um den Speicherbedarf des Ergebnisses zu reduzieren, wird nicht für jeden Knoten der gesamte Pfad gespeichert, sondern nur jeweils der Vorgängerknoten.
+Der Speicherbedarf sinkt dadurch von $O(N^2)$ auf $O(N)$, jedoch steigt die Zugriffszeit auf den kürzesten Pfad von $O(1)$ auf $O(log(N))$.
 
 \section{Ergebnisse und Diskussion}
 
