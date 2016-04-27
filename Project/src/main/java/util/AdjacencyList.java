@@ -621,4 +621,24 @@ public class AdjacencyList {
         return connected.stream().mapToInt(Integer::intValue).toArray();
 
     }
+    
+    /**
+     * Compute the connection cost of a node.
+     * @param node What node is being examined.
+     * @return The total connection cost as a float.
+     */
+    public float getConnectionCost(int node)
+    {
+        // TODO
+        return (float) 0.0;
+    }
+    
+    /**
+     * Prune a node (and accompanying steiner nodes) from Graph.
+     * @param node The node to be pruned.
+     */
+    public void prune(int node)
+    {
+        // TODO
+    }
 }

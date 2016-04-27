@@ -8,10 +8,23 @@ package util;
  */
 public class PrizeCollecting
 {
-    public static void MSTPCST(AdjacencyList adjList, boolean[] isTarget)
+    /**
+     * Prize-collecting algorithm
+     * @param adjList
+     * @param prizes
+     */
+    public static void MSTPCST(AdjacencyList adjList, int[] prizes)
     {
         /* Init */
         AdjacencyList g = adjList;
+        
+        /* compute targets from prizes */
+        boolean[] isTarget = new boolean[prizes.length];
+        for (int i = 0; i < prizes.length; i++)
+        {
+            /* Non-negative prize means it's a target */
+            isTarget[i] = (prizes[i] >= 0);
+        }
         
         int targetCount = 0;
         for (int i = 0; i < isTarget.length; i++)
@@ -67,6 +80,16 @@ public class PrizeCollecting
         /* Phase II */
         System.out.println("Phase II");
         
-        // TODO: Phase II
+        for (int node : g.getConnectedNodes())
+        {
+            /* Only check/prune non-steiner nodes */
+            if (prizes[node] >= 0)
+            {
+                float cc = g.getConnectionCost(node);
+            
+                if (prizes[node] <= cc)
+                    { g.prune(node); }
+            }
+        }
     }
 }
