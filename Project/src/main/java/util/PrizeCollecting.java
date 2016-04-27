@@ -56,10 +56,9 @@ public class PrizeCollecting
             c_prime = t.getTotalWeight();
             
             /* Convert T into original Graph G and obtain a subgraph T' */
-            AdjacencyList t_prime = t.toGraph(dijkstras);
+            AdjacencyList t_prime = t.toGraph();
             
             /* S <- all nodes in T' */
-            targets = new int[t_prime.getNodeCount()];
             targets = t_prime.getConnectedNodes();
             
             g = t_prime;

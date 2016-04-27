@@ -558,7 +558,8 @@ public class AdjacencyList {
      * @param ds all-to-all Dijkstras, for distances between nodes.
      * @return
      */
-    public static AdjacencyList toCompleteGraph(int[] targets, Dijkstra[] ds) {
+    public static AdjacencyList toCompleteGraph(int[] targets, Dijkstra[] ds)
+    {
         /* There are as many nodes as there are targets. Steiner nodes are not 
            included in this representation. */
         int nodeCount = targets.length;
@@ -571,8 +572,9 @@ public class AdjacencyList {
         float[] weights = new float[edgeCount];
 
         /* Fill nodeI and nodeJ like this (example for n = 5) */
- /* nodeI = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4] */
- /* nodeJ = [1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3] */
+        /* nodeI = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4] */
+        /* nodeJ = [1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3] */
+ 
         for (int i = 0; i < nodeCount; i++) {
             int trgt = 0;
 
