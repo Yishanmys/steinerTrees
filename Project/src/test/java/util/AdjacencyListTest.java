@@ -5,6 +5,7 @@
  */
 package util;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -219,5 +220,33 @@ public class AdjacencyListTest {
         
         System.out.println(sum);
         assertEquals(sum, 15, 0.0001);
+    }
+    
+
+    /**
+     * Test of a not connected graph.
+     */
+    @org.junit.Test
+    public void testNotConnected() {
+        System.out.println("NotConnected");
+//        int[] nodeI = new int[]{0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7};
+        int[] nodeI = new int[]{4, 1, 0, 1, 3, 1};
+//        int[] nodeJ = new int[]{1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7, 0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6};
+        int[] nodeJ = new int[]{1, 4, 1, 0, 1, 3};
+//        float[] weights = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f, 0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
+        float[] weights = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+        AdjacencyList list = new AdjacencyList(5, nodeI.length, nodeI, nodeJ, weights);
+//        list.print();
+        Dijkstra dijkstra = new Dijkstra(list, 3);
+        for(int i=0; i<5; i++) {
+            dijkstra.getDistanceTo(i);
+            dijkstra.getEdgesOfShortestPathTo(i);
+            dijkstra.getNodeStepsTo(i);
+            dijkstra.getNodesOfShortestPathTo(i);
+            dijkstra.getPreEdgeOf(i);
+            dijkstra.getPredecessorOf(i);
+        }
+        assertArrayEquals(new int[] {0, 1, 3, 4}, list.getConnectedNodes());
+//        System.out.println(Arrays.toString(list.mst(new int[] {3, 4}).getConnectedNodes()));
     }
 }

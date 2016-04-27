@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -39,7 +40,8 @@ public class AdjacencyList {
      * @param weights the weight of edge m
      */
     public AdjacencyList(int nodeCount, int edgeCount, int[] nodeI, int[] nodeJ, float[] weights) {
-        this(nodeCount, edgeCount, nodeI, nodeJ, weights, edgeCount > nodeCount * nodeCount / 100 ? INIT_PURE_COUNTING_SORT : INIT_PARTLY_COUNTING_SORT);
+//        this(nodeCount, edgeCount, nodeI, nodeJ, weights, edgeCount > nodeCount * nodeCount / 100 ? INIT_PURE_COUNTING_SORT : INIT_PARTLY_COUNTING_SORT);
+        this(nodeCount, edgeCount, nodeI, nodeJ, weights, INIT_PARTLY_COUNTING_SORT);
     }
 
     /**
@@ -176,6 +178,8 @@ public class AdjacencyList {
     }
 
     public void print() {
+        System.out.println("ListStarts: " + Arrays.toString(listStarts));;
+        System.out.println("AdjacencyList: " + Arrays.toString(adjacencyList));;
         for (int i = 0; i < getNodeCount(); i++) {
             for (int m = getStartOf(i); m < getEndOf(i); m++) {
                 System.out.println("Edge from " + i + " to " + getToNode(m));
@@ -290,9 +294,8 @@ public class AdjacencyList {
     }
 
     /**
-     * The number of nodes.
-     * Runs in O(1).
-     * 
+     * The number of nodes. Runs in O(1).
+     *
      * @return the nodecount
      */
     public int getNodeCount() {
@@ -300,9 +303,8 @@ public class AdjacencyList {
     }
 
     /**
-     * The number of edges.
-     * Runs in O(1).
-     * 
+     * The number of edges. Runs in O(1).
+     *
      * @return the edgecount
      */
     public int getEdgeCount() {
@@ -334,9 +336,9 @@ public class AdjacencyList {
     }
 
     /**
-     * The edges of node n as an Iterable.
-     * This is much slower than for(int i=getStartOf(n); i&lt;getEndOf(n); i++);
-     * 
+     * The edges of node n as an Iterable. This is much slower than for(int
+     * i=getStartOf(n); i&lt;getEndOf(n); i++);
+     *
      * @param n the from node
      * @return the edges as an Iterable.
      */
@@ -368,9 +370,10 @@ public class AdjacencyList {
     }
 
     /**
-     * All edges from node n as an IntStream.
-     * This is slightly (with a constant amount of time) slower than for(int i=getStartOf(n); i&lt;getEndOf(n); i++); 
-     * 
+     * All edges from node n as an IntStream. This is slightly (with a constant
+     * amount of time) slower than for(int i=getStartOf(n); i&lt;getEndOf(n);
+     * i++);
+     *
      * @param n the from node
      * @return the edges as IntStream
      */
@@ -544,69 +547,76 @@ public class AdjacencyList {
             }
         }
 
-        return new SteinerTree(nodeI2, nodeJ2, weights2, totalWeight);
+        return new SteinerTree(getNodeCount(), nodeI2, nodeJ2, weights2, totalWeight);
     }
-    
+
     /**
      * Generates a complete graph from target nodes and distances between them.
      * This is used in phase I of the prize-collecting algorithm.
-     * @param targets   The target nodes.
-     * @param ds        all-to-all Dijkstras, for distances between nodes.
-     * @return 
+     *
+     * @param targets The target nodes.
+     * @param ds all-to-all Dijkstras, for distances between nodes.
+     * @return
      */
-    public static AdjacencyList toCompleteGraph(int[] targets, Dijkstra[] ds)
-    {
+    public static AdjacencyList toCompleteGraph(int[] targets, Dijkstra[] ds) {
         /* There are as many nodes as there are targets. Steiner nodes are not 
            included in this representation. */
         int nodeCount = targets.length;
-        
+
         /* There are n*(n-1) edges in a complete, directed graph with n nodes */
-        int edgeCount = nodeCount * (nodeCount-1);
-        
-        int[]   nodeI   = new int  [edgeCount];
-        int[]   nodeJ   = new int  [edgeCount];
+        int edgeCount = nodeCount * (nodeCount - 1);
+
+        int[] nodeI = new int[edgeCount];
+        int[] nodeJ = new int[edgeCount];
         float[] weights = new float[edgeCount];
-        
+
         /* Fill nodeI and nodeJ like this (example for n = 5) */
-        
-        /* nodeI = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4] */
-        /* nodeJ = [1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3] */
-        
-        for (int i = 0; i < nodeCount; i++)
-        {
+ /* nodeI = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4] */
+ /* nodeJ = [1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3] */
+        for (int i = 0; i < nodeCount; i++) {
             int trgt = 0;
-            
-            for (int j = 0; j < (nodeCount - 1); j++)
-            {
+
+            for (int j = 0; j < (nodeCount - 1); j++) {
                 /* no edges from a node to itself */
-                if (trgt == i) { trgt++; }
-                
-                nodeI  [(i * nodeCount) + j] = i;
-                nodeJ  [(i * nodeCount) + j] = trgt;
+                if (trgt == i) {
+                    trgt++;
+                }
+
+                nodeI[(i * nodeCount) + j] = i;
+                nodeJ[(i * nodeCount) + j] = trgt;
                 weights[(i * nodeCount) + j] = ds[i].getDistanceTo(trgt);
-                
+
                 trgt++;
             }
         }
-        
+
         /* Generate complete Graph from the data just computed */
         AdjacencyList completeGraph = new AdjacencyList(nodeCount,
-                                                        edgeCount,
-                                                        nodeI,
-                                                        nodeJ,
-                                                        weights);
-              
+                edgeCount,
+                nodeI,
+                nodeJ,
+                weights);
+
         /* Return complete Graph */
         return completeGraph;
     }
-    
+
     /**
      * Returns all nodes in this graph.
+     *
      * @return int[] of all nodes
      */
-    public int[] getNodes()
-    {
-        // TODO
-        return null;
+    public int[] getConnectedNodes() {
+        HashSet<Integer> connected = new HashSet<>();
+        for (int n = 0; n < getNodeCount(); n++) {
+            if (getDegree(n) > 0) {
+                connected.add(n);
+            }
+        }
+        for (int m = 0; m < getEdgeCount(); m++) {
+            connected.add(getToNode(m));
+        }
+        return connected.stream().mapToInt(Integer::intValue).toArray();
+
     }
 }

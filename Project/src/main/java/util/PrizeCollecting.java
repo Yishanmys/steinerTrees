@@ -60,7 +60,7 @@ public class PrizeCollecting
             
             /* S <- all nodes in T' */
             targets = new int[t_prime.getNodeCount()];
-            targets = t_prime.getNodes();
+            targets = t_prime.getConnectedNodes();
             
             g = t_prime;
         }

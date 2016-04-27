@@ -31,10 +31,10 @@ public class Dijkstra {
      * Calculate the shortest path from source to each node for which isTarget
      * is true. Other nodes might be calculated but not might also through an
      * exception if tried to get shortest path to them. If every element of
-     * isTarget is false, the shortest path to each node is computed. Make
-     * sure that targetCount is equal to the number of elements of isTarget
-     * which are true. If targetCount is greater, all paths are computed, if it
-     * lower not all targets might be in the result.
+     * isTarget is false, the shortest path to each node is computed. Make sure
+     * that targetCount is equal to the number of elements of isTarget which are
+     * true. If targetCount is greater, all paths are computed, if it lower not
+     * all targets might be in the result.
      *
      * @param adjacencyList the graph to work on
      * @param source the node from which all paths are calculated
@@ -149,15 +149,19 @@ public class Dijkstra {
 
     /**
      * Get an array of nodes which are part of the shortest path from source to
-     * n. Throws a NegativeArraySizeException if there is no path from source to
+     * n. Returns null if there is no path from source to
      * n. Might return a false result if n is not a target but targets are
      * specified.
      *
      * @param n the ToNode
-     * @return the shortest path as an array of nodes
+     * @return the shortest path as an array of nodes or null if there is no path
      */
     public int[] getNodesOfShortestPathTo(int n) {
-        int[] path = new int[getNodeStepsTo(n)];
+        int pathLength = getNodeStepsTo(n);
+        if (pathLength < 0) {
+            return null;
+        }
+        int[] path = new int[pathLength];
         int i = getNodeStepsTo(n) - 1;
         while (i >= 0) {
             path[i] = n;
@@ -169,15 +173,19 @@ public class Dijkstra {
 
     /**
      * Get an array of edges which are part of the shortest path from source to
-     * n. Throws a NegativeArraySizeException if there is no path from source to
+     * n. Returns null if there is no path from source to
      * n. Might return a false result if n is not a target but targets are
      * specified.
      *
      * @param n the ToNode
-     * @return the shortest path as an array of edges
+     * @return the shortest path as an array of edges or null if there is no path
      */
     public int[] getEdgesOfShortestPathTo(int n) {
-        int[] path = new int[getNodeStepsTo(n)];
+        int pathLength = getNodeStepsTo(n);
+        if (pathLength < 0) {
+            return null;
+        }
+        int[] path = new int[pathLength];
         int i = getNodeStepsTo(n) - 1;
         while (i >= 0) {
             path[i] = preEdges[n];
