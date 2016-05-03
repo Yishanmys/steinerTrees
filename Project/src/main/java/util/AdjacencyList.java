@@ -583,12 +583,22 @@ public class AdjacencyList {
                 if (trgt == i) {
                     trgt++;
                 }
+                int currentIndex = (i * (nodeCount - 1)) + j - 1;
 
-                nodeI[(i * nodeCount) + j] = i;
-                nodeJ[(i * nodeCount) + j] = trgt;
-                weights[(i * nodeCount) + j] = ds[i].getDistanceTo(trgt);
+                nodeI[currentIndex] = i;
+                nodeJ[currentIndex] = trgt;
+                weights[currentIndex] = ds[i].getDistanceTo(trgt);
 
                 trgt++;
+            }
+        }
+        
+        for (int i=0; i < nodeCount; i++) {
+            for (int j=0; j<(nodeCount - 1); j++) {
+              
+                int currentIndex = (i * (nodeCount - 1)) + j - 1;
+                int altIndex = (j * (nodeCount - 1)) + i - 1;
+                weights[currentIndex] = Math.min(weights[currentIndex], weights[altIndex]);
             }
         }
 

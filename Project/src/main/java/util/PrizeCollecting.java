@@ -13,38 +13,33 @@ public class PrizeCollecting
      * @param adjList
      * @param prizes
      */
-    public static void MSTPCST(AdjacencyList adjList, int[] prizes)
+    public static void MSTPCST(AdjacencyList adjList, boolean[] isTarget, float[] prizes)
     {
         /* Init */
         AdjacencyList g = adjList;
         
-        /* compute targets from prizes */
-        boolean[] isTarget = new boolean[prizes.length];
-        for (int i = 0; i < prizes.length; i++)
-        {
-            /* Non-negative prize means it's a target */
-            isTarget[i] = (prizes[i] >= 0);
-        }
-        
-        int targetCount = 0;
-        for (int i = 0; i < isTarget.length; i++)
-            { if (isTarget[i]) { targetCount++; } }
+        int targetCount = isTarget.length;
         
         /* targets is called S in the paper */
         int[] targets = new int[targetCount];
         int   l1      = 0;
         
-        for (int i = 0; i < isTarget.length; i++)
-            { if (isTarget[i]) { targets[l1] = i; l1++; } }
+        for (int i = 0; i < targetCount; i++)
+        {
+            if (isTarget[i])
+            {
+                targets[l1] = i; l1++;
+            }
+        }
         
-        int[] s       = targets.clone(); // keep original targets
+        //int[] s       = targets.clone(); // keep original targets
         
         /* C <- ∞ */
         float c;
         c = Float.POSITIVE_INFINITY;
         
         /* C' <- Σ(e ∈ E) c_e */
-        float c_prime = (float) 0.0;
+        float c_prime = 0.0f;
         for (int i = 0; i < g.getEdgeCount(); i++)
             { c_prime += g.getWeight(i); }
         
@@ -87,7 +82,7 @@ public class PrizeCollecting
             {
                 float cc = g.getConnectionCost(node);
             
-                if (prizes[node] <= cc)
+                if (prizes[node] < cc)
                     { g.prune(node); }
             }
         }
