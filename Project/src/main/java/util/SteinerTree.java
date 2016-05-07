@@ -6,6 +6,7 @@
 package util;
 
 import java.util.HashSet;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * A SteinerTree represented as a graph which consists of all edges from
@@ -31,10 +32,10 @@ public class SteinerTree {
      */
     public SteinerTree(int nodeCount, int[] nodeI, int[] nodeJ, float[] weights, float totalWeight) {
         this.nodeCount = nodeCount;
-        this.nodeI = nodeI;
-        this.nodeJ = nodeJ;
-        this.weights = weights;
-        this.totalWeight = totalWeight;
+        this.nodeI = ArrayUtils.addAll(nodeI, nodeJ);
+        this.nodeJ = ArrayUtils.addAll(nodeJ, nodeI);
+        this.weights = ArrayUtils.addAll(weights, weights);
+        this.totalWeight = 2*totalWeight;
     }
 
     public int[] getNodeI() {
@@ -49,8 +50,20 @@ public class SteinerTree {
         return weights;
     }
 
-    public float getTotalWeight() {
-        return totalWeight;
+    /**
+     * Get total weight of graph
+     * @param directed Count double edges twice or not.
+     * @return total weight of the graph
+     */
+    public float getTotalWeight(boolean directed) {
+        if (directed)
+        {
+            return totalWeight;
+        }
+        else
+        {
+            return totalWeight / 2;
+        }
     }
 
     public int getNodeCount() {
@@ -76,5 +89,16 @@ public class SteinerTree {
         }
         return connected.stream().mapToInt(Integer::intValue).toArray();
 
+    }
+    
+    public String toString() {
+        String res = "SteinerTree";
+        for (int i=0; i<nodeI.length; i++) {
+            res += "START\n";
+            res += nodeI[i] + " ";
+            res += nodeJ[i] + " ";
+            res += weights[i] + " ";
+        }
+        return res;
     }
 }

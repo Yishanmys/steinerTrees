@@ -12,7 +12,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
-
+import org.apache.commons.lang3.*;
 /**
  *
  * @author Lars Oetermann <lars.oetermann.com>
@@ -171,32 +171,32 @@ public class AdjacencyListTest {
         }
     }
 
-    /**
-     * Test of mst method, of class AdjacencyList.
-     */
-    @org.junit.Test
-    public void testMST() {
-        System.out.println("MST");
-//        int[] nodeI = new int[]{0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7};
-        int[] nodeI = new int[]{4, 1, 0, 1, 2, 1, 3, 1};
-//        int[] nodeJ = new int[]{1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7, 0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6};
-        int[] nodeJ = new int[]{1, 4, 1, 0, 1, 2, 1, 3};
-//        float[] weights = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f, 0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
-        float[] weights = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
-//        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights, AdjacencyList.INIT_PARTLY_COUNTING_SORT).mst(new int[] {0, 2, 4, 6});
-        SteinerTree tree = new AdjacencyList(5, nodeI.length, nodeI, nodeJ, weights).mst(new int[] {0, 1, 2, 3});
-        System.out.print("NodeI: [");
-        for (int o : tree.getNodeI()) {
-            System.out.print(o+", ");
-        }
-        System.out.println("]");
-        System.out.print("NodeJ: [");
-        for (int o : tree.getNodeJ()) {
-            System.out.print(o+", ");
-        }
-        System.out.println("]");
-        System.out.println("Total Weight: "+tree.getTotalWeight());
-    }
+//    /**
+//     * Test of mst method, of class AdjacencyList.
+//     */
+//    @org.junit.Test
+//    public void testMST() {
+//        System.out.println("MST");
+////        int[] nodeI = new int[]{0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7};
+//        int[] nodeI = new int[]{4, 1, 0, 1, 2, 1, 3, 1};
+////        int[] nodeJ = new int[]{1, 2, 4, 3, 4, 5, 6, 7, 8, 6, 7, 0, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6};
+//        int[] nodeJ = new int[]{1, 4, 1, 0, 1, 2, 1, 3};
+////        float[] weights = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f, 0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
+//        float[] weights = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+////        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights, AdjacencyList.INIT_PARTLY_COUNTING_SORT).mst(new int[] {0, 2, 4, 6});
+//        SteinerTree tree = new AdjacencyList(5, nodeI.length, nodeI, nodeJ, weights).mst(new int[] {0, 1, 2, 3});
+//        System.out.print("NodeI: [");
+//        for (int o : tree.getNodeI()) {
+//            System.out.print(o+", ");
+//        }
+//        System.out.println("]");
+//        System.out.print("NodeJ: [");
+//        for (int o : tree.getNodeJ()) {
+//            System.out.print(o+", ");
+//        }
+//        System.out.println("]");
+//        System.out.println("Total Weight: "+tree.getTotalWeight(false));
+//    }
     
     
     /**
@@ -220,6 +220,46 @@ public class AdjacencyListTest {
         
         System.out.println(sum);
         assertEquals(sum, 15, 0.0001);
+    }
+    
+    @org.junit.Test
+    public void testPrizeColleting(){
+        int nodeCount = 6;
+        int edgeCount = 10;
+        int nodesI[] = new int[]{ 1,0,3,5,4,1,0,3,5,4 };
+        int nodesJ[] = new int[]{ 0,3,5,4,1,2,2,2,2,2 };
+        float weights[] = new float[]{ 6,5,2,6,3,5,1,5,4,6 };
+        
+        int nodeCount_prime = 12;
+        int edgeCount_prime = 20;
+        //int nodesI_prime[] = nodesI + nodesJ;
+        int nodesI_prime[] = ArrayUtils.addAll(nodesI, nodesJ);
+        int nodesJ_prime[] = ArrayUtils.addAll(nodesJ, nodesI);
+        float weights_prime[] = ArrayUtils.addAll(weights, weights);
+        
+        AdjacencyList al2 = new AdjacencyList(nodeCount, edgeCount_prime, nodesI_prime, nodesJ_prime, weights_prime);
+        
+//        boolean[] t;
+//        t = new boolean[]{false,false,false,false,true,false};
+//        Dijkstra d = new Dijkstra(al2, 0, t, 1);
+        
+//        System.out.println("------------------------------");
+//        System.out.println("Nodes: ");
+//        for (int i = 0; i < d.getNodesOfShortestPathTo(4).length; i++) {
+//            System.out.println(d.getNodesOfShortestPathTo(4)[i]);
+//        }
+//        System.out.println("Edges: ");
+//        for (int i = 0; i < d.getEdgesOfShortestPathTo(4).length; i++) {
+//            System.out.println(d.getEdgesOfShortestPathTo(4)[i]);
+//            System.out.println("");
+//        }
+//        System.out.println("------------------------------");
+
+        
+        float[] prizes = {2.7f, 3.1f, 0.6f, 7.2f, 2.2f, 4.0f};
+        AdjacencyList prizeList = PrizeCollecting.MSTPCST(al2, new boolean[]{true,false,false,true,true,false}, prizes);
+        
+        assertNotNull(prizeList);
     }
     
 

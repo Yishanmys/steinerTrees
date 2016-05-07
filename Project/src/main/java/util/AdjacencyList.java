@@ -18,6 +18,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -434,7 +438,7 @@ public class AdjacencyList {
      * @return The SteinerTree representing a graph in the form of to node
      * arrays. The graph is described via the edges from nodeI[n] to nodeJ[n].
      */
-    public SteinerTree mst(final int[] targets) {
+    public AdjacencyList mst(final int[] targets, AdjacencyList original) {
 
         final boolean[] isTarget = new boolean[getNodeCount()];
 
@@ -445,6 +449,7 @@ public class AdjacencyList {
         final float[] distances = new float[edgeCount];
         final Dijkstra[] dijkstras = new Dijkstra[targets.length];
 
+        System.out.println("targets in mst "+targets.length);
         ExecutorService executor = Executors.newFixedThreadPool(targets.length);
         for (int i = 0; i < targets.length; i++) {
             final int target = i;
@@ -473,6 +478,10 @@ public class AdjacencyList {
         } catch (InterruptedException ex) {
             Logger.getLogger(AdjacencyList.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+//        for (int i=0; i<nodeI.length; i++){
+//            System.out.print("ad "+nodeI[i]+" "+nodeJ[i]+" "+distances[i]+"\n");
+//        }
 
         // First Kruskal
         AdjacencyList td = kruskal(getNodeCount(), nodeI.length, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
@@ -502,6 +511,10 @@ public class AdjacencyList {
             nodeJ2[i] = nodeJList.get(i);
             weights[i] = weightList.get(i);
         }
+        
+//        for (int i=0; i<nodeI2.length; i++){
+//            System.out.print("fk "+nodeI2[i]+" "+nodeJ2[i]+" "+weights[i]+"\n");
+//        }
 
         // Second Kruskal
         AdjacencyList t = kruskal(getNodeCount(), nodeI2.length, nodeI2, nodeJ2, weights, INIT_PARTLY_COUNTING_SORT);
@@ -546,8 +559,51 @@ public class AdjacencyList {
                 }
             }
         }
+        
+//        for (int i=0; i<nodeI2.length; i++){
+//            System.out.print("sk "+nodeI2[i]+" "+nodeJ2[i]+" "+weights2[i]+"\n");
+//        }
 
-        return new SteinerTree(getNodeCount(), nodeI2, nodeJ2, weights2, totalWeight);
+//        return new SteinerTree(getNodeCount(), nodeI2, nodeJ2, weights2, totalWeight);
+
+        List<Integer> IList = new ArrayList<>();
+        List<Integer> JList = new ArrayList<>();
+        List<Float>   WList = new ArrayList<>();
+        
+        for (int i=0; i < nodeI2.length; i++)
+        {
+            for (Integer edge: dijkstras[nodeI2[i]].getEdgesOfShortestPathTo(nodeJ2[i]))
+            {
+                    IList.add(original.getFromNode(edge));
+                    JList.add(original.getToNode(edge));
+                    WList.add(original.getWeight(edge));
+//                  System.out.println("Adding");
+//                  System.out.println("from "+g.getFromNode(edge));
+//                  System.out.println("to "+g.getToNode(edge));
+            }
+        }
+           
+        assert IList.size() == JList.size();
+        assert JList.size() == WList.size();
+           
+        int[] newNodeI = new int[IList.size()];
+        int[] newNodeJ = new int[JList.size()];
+        float[] newWeights = new float[WList.size()];
+           
+        for (int i = 0; i < newNodeJ.length; i++) 
+        {
+           newNodeI[i] = nodeIList.get(i);
+           newNodeJ[i] = nodeJList.get(i);
+        }
+        
+        int fooNodeCount = this.getNodeCount();
+        int fooEdgeCount = newNodeI.length;
+           
+        return new AdjacencyList(fooNodeCount,
+                                 fooEdgeCount,
+                                 newNodeI,
+                                 newNodeJ,
+                                 newWeights);
     }
 
     /**
@@ -558,14 +614,11 @@ public class AdjacencyList {
      * @param ds all-to-all Dijkstras, for distances between nodes.
      * @return
      */
-    public static AdjacencyList toCompleteGraph(int[] targets, Dijkstra[] ds)
+    public static AdjacencyList toCompleteGraph(int nodeCount, int[] targets, Dijkstra[] ds)
     {
-        /* There are as many nodes as there are targets. Steiner nodes are not 
-           included in this representation. */
-        int nodeCount = targets.length;
 
         /* There are n*(n-1) edges in a complete, directed graph with n nodes */
-        int edgeCount = nodeCount * (nodeCount - 1);
+        int edgeCount = targets.length * (targets.length - 1);
 
         int[] nodeI = new int[edgeCount];
         int[] nodeJ = new int[edgeCount];
@@ -574,32 +627,25 @@ public class AdjacencyList {
         /* Fill nodeI and nodeJ like this (example for n = 5) */
         /* nodeI = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4] */
         /* nodeJ = [1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3] */
- 
-        for (int i = 0; i < nodeCount; i++) {
-            int trgt = 0;
-
-            for (int j = 0; j < (nodeCount - 1); j++) {
-                /* no edges from a node to itself */
-                if (trgt == i) {
-                    trgt++;
+        
+        List<Integer> nodeIList = new ArrayList<>();
+        List<Integer> nodeJList = new ArrayList<>();
+        for (Integer t: targets) {
+            for (int i=0; i<targets.length-1; i++) {
+                nodeIList.add(t);
+            }
+            for (Integer s: targets) {
+                if (s!=t) {
+                    nodeJList.add(s);
                 }
-                int currentIndex = (i * (nodeCount - 1)) + j - 1;
-
-                nodeI[currentIndex] = i;
-                nodeJ[currentIndex] = trgt;
-                weights[currentIndex] = ds[i].getDistanceTo(trgt);
-
-                trgt++;
             }
         }
         
-        for (int i=0; i < nodeCount; i++) {
-            for (int j=0; j<(nodeCount - 1); j++) {
-              
-                int currentIndex = (i * (nodeCount - 1)) + j - 1;
-                int altIndex = (j * (nodeCount - 1)) + i - 1;
-                weights[currentIndex] = Math.min(weights[currentIndex], weights[altIndex]);
-            }
+        for (int i=0; i<nodeI.length; i++){
+            nodeI[i] = nodeIList.get(i);
+            nodeJ[i] = nodeJList.get(i);
+            weights[i] = ds[nodeI[i]].getDistanceTo(nodeJ[i]);
+            System.out.println(nodeI[i]+" "+nodeJ[i]+" "+weights[i]);
         }
 
         /* Generate complete Graph from the data just computed */
