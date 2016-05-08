@@ -697,8 +697,8 @@ public class AdjacencyList {
      */
     public float getConnectionCost(int node)
     {
-        // TODO
-        return (float) 0.0;
+        assert getDegree(node) == 1;
+        return getWeight(getEdgeIndex(node, adjacencyList[listStarts[node]]));
     }
 
     public float getTotalWeight(){

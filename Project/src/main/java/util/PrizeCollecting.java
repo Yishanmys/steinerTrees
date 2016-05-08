@@ -1,5 +1,7 @@
 package util;
 
+import java.util.Optional;
+
 /**
  * Based on the following paper:
  * A fast heuristic for the prize-collecting Steiner tree problem.
@@ -40,7 +42,7 @@ public class PrizeCollecting
         
         assert targets.length == targetCount;
         
-        //int[] s       = targets.clone(); // keep original targets
+        int[] s       = targets.clone(); // keep original targets
         
         /* C <- ∞ */
         float c;
@@ -99,23 +101,25 @@ public class PrizeCollecting
         return g;
     }
     
-    public static AdjacencyList phaseTwo(AdjacencyList g, float[] prizes)
+    public static AdjacencyList phaseTwo(AdjacencyList g, boolean[] isTarget, float[] prizes)
     {
         /* Phase II */
         System.out.println("Phase II");
         
-        for (int node : g.getConnectedNodes())
+        int[] nodes = g.getConnectedNodes();
+        
+        for (int node : nodes)
         {
-            /* Only check/prune non-steiner nodes */
-            if (prizes[node] >= 0)
+            // only prune prunable nodes
+            if (g.getDegree(node) == 1)
             {
                 float cc = g.getConnectionCost(node);
-            
                 if (prizes[node] < cc)
-                    { g.prune(node); }
+                {
+                    g.prune(node);
+                }
             }
         }
-        
         return g;
     }
 }
