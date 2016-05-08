@@ -572,10 +572,15 @@ public class AdjacencyList {
         
         for (int i=0; i < nodeI2.length; i++)
         {
-            System.out.println("i: " + i + " NodeI2[i]: " + nodeI2[i]);
-                            
-            //for (Integer edge: dijkstras[nodeI2[i]].getEdgesOfShortestPathTo(nodeJ2[i]))
-            for (Integer edge: dijkstras[i].getEdgesOfShortestPathTo(nodeJ2[i]))
+
+            Dijkstra correctDijkstra = null;
+            for (int j=0; j<dijkstras.length; j++){
+                if (dijkstras[j].getSource() == nodeI2[i]){
+                    correctDijkstra = dijkstras[j];
+                }
+            }
+
+            for (Integer edge: correctDijkstra.getEdgesOfShortestPathTo(nodeJ2[i]))
             {
                     IList.add(original.getFromNode(edge));
                     JList.add(original.getToNode(edge));

@@ -209,4 +209,7 @@ public class Dijkstra {
         return dijkstras;
     }
 
+    public int getSource(){
+        return source;
+    }
 }
