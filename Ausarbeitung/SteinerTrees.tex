@@ -1,6 +1,8 @@
 \documentclass[a4paper,10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
+\usepackage[square,sort,comma,numbers]{natbib}
+\usepackage[german,lined,vlined]{algorithm2e}
 
 %opening
 \title{2-Approximation des Pricecollecting-Steintree-Problems}
@@ -15,10 +17,12 @@
 \end{abstract}
 
 \section{Motivation}
+Im Rahmen der Veranstaltung ``Parallele Algorithmen und Datenverarbeitung''
 
 \section{Einleitung}
 
 \section{Verwendeter Algorithmus}
+\label{sec:mst}
 Der minimimale Steinerbaum wird mithilfe des folgenden Algorithmuses approximiert:\\
 Input: Ein Graph und die Liste von Zielknoten (Targets)\\
 
@@ -72,6 +76,26 @@ zu allen Targets berechnet wurde und nicht mehr zu allen Knoten.\\
 Um den Speicherbedarf des Ergebnisses zu reduzieren, wird nicht für jeden Knoten der gesamte Pfad gespeichert, sondern nur jeweils der Vorgängerknoten.
 Der Speicherbedarf sinkt dadurch von $O(N^2)$ auf $O(N)$, jedoch steigt die Zugriffszeit auf den kürzesten Pfad von $O(1)$ auf $O(log(N))$.
 
+
+
+\subsection{Minimale Spannbäume}
+Die Ausführungen in diesem Unterabschnitt richten sich nach \cite[Kapitel 23]{cormen}.
+Der in Abschnitt (\ref{sec:mst}) beschreibene Algorithmus
+
+\begin{algorithm}[H]
+  \label{kruskal}
+  \caption{Kruskal-Algorithmus}
+      
+  \hspace{1cm}
+\end{algorithm}
+\hspace{1cm}
+
+
+
+
 \section{Ergebnisse und Diskussion}
+
+\bibliography{literatur}
+\bibliographystyle{plainnat}
 
 \end{document}
