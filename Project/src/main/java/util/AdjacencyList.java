@@ -700,6 +700,14 @@ public class AdjacencyList {
         // TODO
         return (float) 0.0;
     }
+
+    public float getTotalWeight(){
+        int res=0;
+        for (Float f: adjacencyWeights){
+            res += f;
+        }
+        return res;
+    }
     
     /**
      * Prune a node (and accompanying steiner nodes) from Graph.

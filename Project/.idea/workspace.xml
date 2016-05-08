@@ -36,8 +36,8 @@
       <file leaf-file-name="PrizeCollecting.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/util/PrizeCollecting.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.10056926">
-              <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+            <state vertical-scroll-proportion="-0.092979126">
+              <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -47,7 +47,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/util/AdjacencyList.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="578" column="40" selection-start-line="578" selection-start-column="40" selection-end-line="578" selection-end-column="40" />
+              <caret line="708" column="19" selection-start-line="708" selection-start-column="19" selection-end-line="708" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -547,15 +547,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="AdjacencyListTest_testPrizeColleting - 2016.05.08 at 14h 43m 29s.xml">
-      <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="AdjacencyListTest_testPrizeColleting - 2016.05.08 at 14h 47m 30s.xml">
-      <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="AdjacencyListTest_testPrizeColleting - 2016.05.08 at 14h 55m 16s.xml">
-      <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="AdjacencyListTest_testPrizeColleting - 2016.05.08 at 14h 55m 38s.xml">
       <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
     </history-entry>
@@ -575,6 +566,15 @@
       <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
     </history-entry>
     <history-entry file="AdjacencyListTest_testPrizeColleting - 2016.05.08 at 15h 38m 17s.xml">
+      <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AdjacencyListTest_testPrizeColleting - 2016.05.08 at 15h 47m 48s.xml">
+      <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AdjacencyListTest_testPrizeColleting - 2016.05.08 at 15h 48m 11s.xml">
+      <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AdjacencyListTest_testPrizeColleting - 2016.05.08 at 15h 49m 53s.xml">
       <configuration name="AdjacencyListTest.testPrizeColleting" configurationId="JUnit" />
     </history-entry>
   </component>
@@ -678,14 +678,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/util/AdjacencyList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="578" column="40" selection-start-line="578" selection-start-column="40" selection-end-line="578" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/util/Dijkstra.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -697,10 +689,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/util/AdjacencyList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="708" column="19" selection-start-line="708" selection-start-column="19" selection-end-line="708" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/util/PrizeCollecting.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.10056926">
-          <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+        <state vertical-scroll-proportion="-0.092979126">
+          <caret line="95" column="0" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
           <folding />
         </state>
       </provider>

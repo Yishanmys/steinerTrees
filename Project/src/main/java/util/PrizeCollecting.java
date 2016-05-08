@@ -62,7 +62,7 @@ public class PrizeCollecting
         /* Phase I */
         System.out.println("Phase I");
         
-        while (c_prime <= c)
+        while (c_prime < c)
         {
             System.out.println("Start of WHILE");
             
@@ -85,7 +85,7 @@ public class PrizeCollecting
             AdjacencyList t_prime = g_prime.mst(targets, g, dijkstras);
             
             /* C' <- Σ(e ∈ T) c_e */ 
-            // c_prime = t.getTotalWeight(false);
+            c_prime = t_prime.getTotalWeight();
             
             /* Convert T into original Graph G and obtain a subgraph T' */
             //AdjacencyList t_prime = t.toGraph();
