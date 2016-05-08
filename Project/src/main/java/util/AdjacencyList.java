@@ -572,7 +572,10 @@ public class AdjacencyList {
         
         for (int i=0; i < nodeI2.length; i++)
         {
-            for (Integer edge: dijkstras[nodeI2[i]].getEdgesOfShortestPathTo(nodeJ2[i]))
+            System.out.println("i: " + i + " NodeI2[i]: " + nodeI2[i]);
+                            
+            //for (Integer edge: dijkstras[nodeI2[i]].getEdgesOfShortestPathTo(nodeJ2[i]))
+            for (Integer edge: dijkstras[i].getEdgesOfShortestPathTo(nodeJ2[i]))
             {
                     IList.add(original.getFromNode(edge));
                     JList.add(original.getToNode(edge));
@@ -592,18 +595,21 @@ public class AdjacencyList {
            
         for (int i = 0; i < newNodeJ.length; i++) 
         {
-           newNodeI[i] = nodeIList.get(i);
-           newNodeJ[i] = nodeJList.get(i);
+           newNodeI[i] = IList.get(i);
+           newNodeJ[i] = JList.get(i);
+           newWeights[i] = WList.get(i);
+           
+            System.out.println("Edge from " + newNodeI[i] + " to " + newNodeJ[i] + " with a weight of " +  newWeights[i]);
         }
         
         int fooNodeCount = this.getNodeCount();
         int fooEdgeCount = newNodeI.length;
            
         return new AdjacencyList(fooNodeCount,
-                                 fooEdgeCount,
-                                 newNodeI,
-                                 newNodeJ,
-                                 newWeights);
+                                 2*fooEdgeCount,
+                                 ArrayUtils.addAll(newNodeI, newNodeJ),
+                                 ArrayUtils.addAll(newNodeJ, newNodeI),
+                                 ArrayUtils.addAll(newWeights, newWeights));
     }
 
     /**
