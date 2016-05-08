@@ -5,26 +5,49 @@
 \usepackage[german,lined,vlined]{algorithm2e}
 
 %opening
-\title{2-Approximation des Pricecollecting-Steintree-Problems}
+\title{2-Approximation des Pricecollecting-Steinerbaum-Problems}
 \author{}
 
 \begin{document}
 
 \maketitle
 
-\begin{abstract}
-
-\end{abstract}
-
 \section{Motivation}
-Im Rahmen der Veranstaltung ``Parallele Algorithmen und Datenverarbeitung''
+Das vorliegende Projekt findet im Rahmen des Moduls ``Parallele Algorithmen und Datenverarbeitung'' statt. In dem Projekt geht es darum, einen gegebenen
+Algorithmus zu parallelisieren, in unserem Fall einen Algorithmus zur Approximation einer Lösung des minimalen Steinerbaum-Problems.
 
 \section{Einleitung}
+Ein Graph $G$ ist beschrieben durch eine Knotenmenge $V$, eine Kantenmenge $E$ und optional eine Gewichtsfunktion $w$, die jedem Knoten $v \in V$
+eine nichtnegative reelle Zahl zuweist, d.h. $G = (V,E,w)$. Im Folgenden wird davon ausgegangen, dass der gegebene Graph zusammenhängend ist,
+d.h. es existiert für jedes Paar von Knoten in dem Graphen ein Pfad, der diese verbindet.
+Ein Graph $S = (V_S, E_S, w)$ ist ein Steinerbaum von einem Graphen $G = (V, E, w)$ für eine Knotenmenge $T \subset V$, wenn S ein Baum ist, alle Blätter
+von S int T enthalten sind und $T \subseteq V_S$ \cite{steinerProblem}. Die Knoten der Menge T werden Terminale genannte und die Knoten der Menge
+$V_S \backslash T$ Nichtterminale. Ein Steinerbaum S von G ist minimal, wenn die Summe der Kantengewichte von S
+unter allen Steinerbäumen $S'$ von G minimal ist.
+
+Die Berechnung minimaler Steinerbäume ist NP-Vollständig. Im folgenden Abschnitt wird ein Algorithmus zur Approximation minimaler Steinerbäume vorgestellt.
+
+
 
 \section{Verwendeter Algorithmus}
 \label{sec:mst}
-Der minimimale Steinerbaum wird mithilfe des folgenden Algorithmuses approximiert:\\
-Input: Ein Graph und die Liste von Zielknoten (Targets)\\
+Der Algorithmus (\ref{mst}) liefert eine 2-Approximation für die Berechnung minimaler Steinerbäume.
+\begin{algorithm}
+  \label{mst}
+  \caption{2-Approximation für die Berechnung minimaler Steinerbäume}
+      \textbf{Input: } Gewichteter Graph $G = (V,E,w)$; Menge T terminaler Knoten
+      \begin{enumerate}
+	\item Berechne den complete distance network $G_D = (T, E_D, w)$.
+	\item Berechne einen minimalen Spannbaum $S_D$ von $G_D$.
+	\item Wandle $S_D$ in einen gewichteten Teilgraphen N um, indem jede Kante aus $S_D$ durch den Korrespondierenden kürzesten Pfad ersetzt wird.
+	\item Berechne einen minimalen Spannbaum $S_N$ für N.
+	\item Wandle $S_N$ in einen Steinerbaum um, indem nacheinander jeder Blattknoten entfernt wird, der kein Terminal ist.
+      \end{enumerate}
+
+  \hspace{1cm}
+\end{algorithm}
+\hspace{1cm}
+
 
 \section{Implementation}
 \subsection{Repräsentation des Graphen}
