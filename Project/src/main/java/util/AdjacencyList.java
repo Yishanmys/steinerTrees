@@ -438,7 +438,7 @@ public class AdjacencyList {
      * @return The SteinerTree representing a graph in the form of to node
      * arrays. The graph is described via the edges from nodeI[n] to nodeJ[n].
      */
-    public AdjacencyList mst(final int[] targets, AdjacencyList original) {
+    public AdjacencyList mst(final int[] targets, AdjacencyList original, Dijkstra[] ds) {
 
         final boolean[] isTarget = new boolean[getNodeCount()];
 
@@ -574,12 +574,13 @@ public class AdjacencyList {
         {
 
             Dijkstra correctDijkstra = null;
-            for (int j=0; j<dijkstras.length; j++){
-                if (dijkstras[j].getSource() == nodeI2[i]){
-                    correctDijkstra = dijkstras[j];
+            for (int j=0; j<ds.length; j++){
+                if (ds[j].getSource() == nodeI2[i]){
+                    correctDijkstra = ds[j];
                 }
             }
 
+            int[] foo = correctDijkstra.getNodesOfShortestPathTo(nodeJ2[i]);
             for (Integer edge: correctDijkstra.getEdgesOfShortestPathTo(nodeJ2[i]))
             {
                     IList.add(original.getFromNode(edge));

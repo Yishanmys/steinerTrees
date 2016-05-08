@@ -82,7 +82,7 @@ public class PrizeCollecting
 //            SteinerTree t = g_prime.mst(targets);
 //            System.out.println(t);
 
-            AdjacencyList t_prime = g_prime.mst(targets, g);
+            AdjacencyList t_prime = g_prime.mst(targets, g, dijkstras);
             
             /* C' <- Σ(e ∈ T) c_e */ 
             // c_prime = t.getTotalWeight(false);
