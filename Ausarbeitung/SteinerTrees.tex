@@ -80,17 +80,51 @@ Der Speicherbedarf sinkt dadurch von $O(N^2)$ auf $O(N)$, jedoch steigt die Zugr
 
 \subsection{Minimale Spannbäume}
 Die Ausführungen in diesem Unterabschnitt richten sich nach \cite[Kapitel 23]{cormen}.
-Der in Abschnitt (\ref{sec:mst}) beschreibene Algorithmus
+Der in Abschnitt (\ref{sec:mst}) beschreibene Algorithmus benötigt an zwei Stellen den minimalen Spannbaum eines Graphen $G=(V,E,w)$. Ein Graph
+$G_S=(V_S,E_S,w)$ ist ein minimaler Spannbaum für den Graphen G genau dann, wenn $G_S$ eine Teilgraph von G ist, alle Knoten von G enthält und die Summe
+seiner Kantengewichte minimal ist. D.h. für $G_S$ muss folgendes gelten: $V_S=V, E_S \subseteq E$ und $\sum_{e \in E_S} w(w)$ muss minimal sein.
 
-\begin{algorithm}[H]
+Ein möglicher Algorithmus für die Berechnung minimaler Spannbäume ist der Algorithmus von Kruskal. Dieser ist in Algorithmus (\ref{kruskal}) dargestellt.
+\begin{algorithm}
   \label{kruskal}
-  \caption{Kruskal-Algorithmus}
-      
+  \caption{Algorithmus von Kruskal}
+      \textbf{Input: } $G = (V,E,w)$ \
+      $A = \emptyset$ \\
+      \For{$v \in V$}
+      {
+	  MAKE-SET(v)
+      }
+      Sortiere Kanten aus E in nichtfallender Reihenfolge nach dem Gewicht w \\
+      \For{$(u,v) \in E$ in nichtfallender Reihenfolge nach ihren Gewichten}
+      {
+	  \If{FIND-SET(u) $\neq$ FIND-SET(v)}
+	  {
+	      $A = A \cup \{ (u,v) \}$ \\
+	      UNION(u,v)
+	  }
+      }
   \hspace{1cm}
 \end{algorithm}
 \hspace{1cm}
+Der Kruskal-Algorithmus startet initial mit einem Wald, in dem jeder Baum aus nur einem Knoten besteht. Dann wird sukzessive über alle Kanten $(u,v)$ des
+Eingebegraphen G in nichtfallender Reihenfolge bezüglich des Kantengewichts $w((u,v))$
+iteriert. Gehören die Knoten $u$ und $v$ zu verschiedenen Bäumen $B_1$ und $B_2$, wird die Kante
+$(u,v)$ zur Menge $A$ hinzugefügt und die Bäume $B_1$ und $B_2$ werden zu einem Baum vereinigt. Am Ende enthält die Menge $A$ die Kanten des
+minimalen Spannbaums zum Graphen G.
 
+Für die Verwaltung des Waldes wird eine Datenstruktur disjunkter Mengen mit den Operationen MAKE-SET, FIND-SET und UNION benötigt. Die Operation MAKE-SET
+erstellt eine leere Menge, FIND-SET findet die Menge, die das gegebene Element enthält, und UNION vereinigt zwei Mengen. In unserer Implementation
+verwenden wir hierfür eine Version, die verkettete Listen für die Repräsentation der Mengen nutzt \cite[Kapitel 21.2]{cormen}. Hier wird für jede
+Menge ein repräsentatives Element ausgeweisen (meist das erste Element in der jeweiligen Liste), durch das jede Menge eindeutig repräsentiert wird.
+Zusätzlich dazu erhält jedes Element ein Attribut $\mathcal{R}$, mit dem das repräsentative Element der Menge gespeichert wird, zu dem das
+jeweilige Element gehört.
+Somit benötigt die Operation FIND-SET(E) konstante Laufzeit, da nur das Attribut $\mathcal{R}$ des Elements E abgefragt werden muss.
+Nehmen wir für die Operation UNION$(M_1,M_2)$ o.B.d.A. an, dass die Menge $M_2$ der Menge $M_1$ hinzugefügt wird. Um dies zu realisieren muss die
+Liste der Menge $M_1$ aktualisiert werden und die Attribute $\mathcal{R}$ der Elemente der Menge $M_2$ müssen auf das repräsentative Element der Menge
+$M_1$ gesetzt werden. Hier ist es somit am effizientesten, die kleinere der beiden Mengen $M_1$ und $M_2$ zur größeren hinzuzufügen.
+Schließlich kann die Liste der Menge $M_2$ gelöscht werden.
 
+Insgesamt besitzt der Algorithmus von Kruskal eine Laufzeit von $\mathcal{O}(|E|\log(|V|))$.
 
 
 \section{Ergebnisse und Diskussion}
