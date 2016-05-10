@@ -224,42 +224,22 @@ public class AdjacencyListTest {
     
     @org.junit.Test
     public void testPrizeColleting(){
-        int nodeCount = 6;
-        int edgeCount = 10;
         int nodesI[] = new int[]{ 1,0,3,5,4,1,0,3,5,4 };
         int nodesJ[] = new int[]{ 0,3,5,4,1,2,2,2,2,2 };
-        float weights[] = new float[]{ 6,5,2,6,3,5,1,5,4,6 };
+        float weightsfoo[] = new float[]{ 6,5,2,6,3,5,1,5,4,6 };
         
-        int nodeCount_prime = 12;
-        int edgeCount_prime = 20;
-        //int nodesI_prime[] = nodesI + nodesJ;
         int nodesI_prime[] = ArrayUtils.addAll(nodesI, nodesJ);
         int nodesJ_prime[] = ArrayUtils.addAll(nodesJ, nodesI);
-        float weights_prime[] = ArrayUtils.addAll(weights, weights);
+        float weights_prime[] = ArrayUtils.addAll(weightsfoo, weightsfoo);
         
-        AdjacencyList al2 = new AdjacencyList(nodeCount, edgeCount_prime, nodesI_prime, nodesJ_prime, weights_prime);
-        
-//        boolean[] t;
-//        t = new boolean[]{false,false,false,false,true,false};
-//        Dijkstra d = new Dijkstra(al2, 0, t, 1);
-        
-//        System.out.println("------------------------------");
-//        System.out.println("Nodes: ");
-//        for (int i = 0; i < d.getNodesOfShortestPathTo(4).length; i++) {
-//            System.out.println(d.getNodesOfShortestPathTo(4)[i]);
-//        }
-//        System.out.println("Edges: ");
-//        for (int i = 0; i < d.getEdgesOfShortestPathTo(4).length; i++) {
-//            System.out.println(d.getEdgesOfShortestPathTo(4)[i]);
-//            System.out.println("");
-//        }
-//        System.out.println("------------------------------");
-
+        AdjacencyList al2 = new AdjacencyList(nodeCount, weightsfoo.length, nodesI_prime, nodesJ_prime, weights_prime);
         
         float[] prizes = {2.7f, 3.1f, 0.6f, 7.2f, 2.2f, 4.0f};
         AdjacencyList prizeList = PrizeCollecting.MSTPCST(al2, new boolean[]{true,false,false,true,true,false}, prizes);
         
-        assertNotNull(prizeList);
+        prizeList.print();
+        
+        assertNotNull(prizes);
     }
     
 
@@ -287,6 +267,39 @@ public class AdjacencyListTest {
             dijkstra.getPredecessorOf(i);
         }
         assertArrayEquals(new int[] {0, 1, 3, 4}, list.getConnectedNodes());
-//        System.out.println(Arrays.toString(list.mst(new int[] {3, 4}).getConnectedNodes()));
+    }
+    
+    @org.junit.Test
+    public void pruneTest()
+    {
+        int[] beforeI = new int[]{0,3,1,2,2,3};
+        int[] beforeJ = new int[]{3,0,2,1,3,2};
+        float[] beforeW = new float[]{(float) 3.0,(float) 3.0, (float) 1.0,(float) 1.0,(float) 2.0,(float) 2.0};
+        AdjacencyList before = new AdjacencyList(4, 6, beforeI, beforeJ, beforeW);
+        before.prune(0);
+        
+        int[] afterI = new int[]{1,2,2,3};
+        int[] afterJ = new int[]{2,1,3,2};
+        float[] afterW = new float[]{(float) 1.0,(float) 1.0,(float) 2.0,(float) 2.0};
+        AdjacencyList after = new AdjacencyList(4, 4, afterI, afterJ, afterW);
+        
+        assertArrayEquals(before.getConnectedNodes(), after.getConnectedNodes());
+        assertEquals(before.getTotalWeight(), after.getTotalWeight(), (float) 0.1);
+        
+        int[] bI = new int[]{0,3,1,3,2,3};
+        int[] bJ = new int[]{3,0,3,1,3,2};
+        float[] bW = new float[]{(float) 3.0,(float) 3.0, (float) 1.0,(float) 1.0,(float) 2.0,(float) 2.0};
+        AdjacencyList b = new AdjacencyList(4, 6, bI, bJ, bW);
+        b.prune(0);
+        b.prune(1);
+        b.prune(2);
+        
+        int[] aI = new int[]{};
+        int[] aJ = new int[]{};
+        float[] aW = new float[]{};
+        AdjacencyList a = new AdjacencyList(4, 0, aI, aJ, aW);
+        
+        assertArrayEquals(b.getConnectedNodes(), a.getConnectedNodes());
+        assertEquals(b.getTotalWeight(), a.getTotalWeight(), (float) 0.1);
     }
 }
