@@ -397,7 +397,17 @@ public class AdjacencyList {
         return Arrays.stream(adjacencyList, getStartOf(n), getEndOf(n));
     }
 
-    public static AdjacencyList kruskal(int nodeCount, int edgeCount, int[] nodeI, int[] nodeJ, final float[] weights, int initMethod) {
+    /**
+     * Returns a Steier Tree using Kruskal's Algorithm.
+     * @param nodeCount Total number of nodes
+     * @param edgeCount Total number of edges
+     * @param nodeI NodeI (edge sources) for the graph
+     * @param nodeJ NodeJ (edge targets) for the graph
+     * @param weights Weights of edges in the graph
+     * @param initMethod initMethod
+     * @return Minimum Spanning tree
+     */
+    public static AdjacencyList kruskalMST(int nodeCount, int edgeCount, int[] nodeI, int[] nodeJ, final float[] weights, int initMethod) {
         NodeSetElement[] setElements = new NodeSetElement[nodeCount];
         NodeSet[] nodeSets = new NodeSet[nodeCount];
         Integer indices[] = new Integer[edgeCount];
@@ -414,13 +424,7 @@ public class AdjacencyList {
             indices[i] = i;
         }
 
-        Arrays.sort(indices, new Comparator<Integer>() {
-
-            @Override
-            public int compare(Integer i1, Integer i2) {
-                return weights[i1] > weights[i2] ? 1 : weights[i1] > weights[i2] ? 0 : -1;
-            }
-        });
+        Arrays.sort(indices, (Integer i1, Integer i2) -> weights[i1] > weights[i2] ? 1 : weights[i1] > weights[i2] ? 0 : -1);
 
         int newEdgeCount = 0;
         for (int i = 0; i < edgeCount; i++) {
@@ -447,10 +451,12 @@ public class AdjacencyList {
      * weight of all edges is approximately as low as possible.
      *
      * @param targets The targets that have to be in the resulting tree (graph)
+     * @param original The original graph for the steiner Trees.
+     * @param ds Dijkstra Objects for all paths in the original graph. 
      * @return The SteinerTree representing a graph in the form of to node
      * arrays. The graph is described via the edges from nodeI[n] to nodeJ[n].
      */
-    public AdjacencyList mst(final int[] targets, AdjacencyList original, Dijkstra[] ds) {
+    public AdjacencyList steinerTree(final int[] targets, AdjacencyList original, Dijkstra[] ds) {
 
         final boolean[] isTarget = new boolean[getNodeCount()];
 
@@ -491,7 +497,7 @@ public class AdjacencyList {
         }
 
         // First Kruskal
-        AdjacencyList td = kruskal(getNodeCount(), nodeI.length, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
+        AdjacencyList td = kruskalMST(getNodeCount(), nodeI.length, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
 
         // First Kruskal to shortest Paths
         List<Integer> nodeIList = new ArrayList<>();
@@ -520,7 +526,7 @@ public class AdjacencyList {
         }
 
         // Second Kruskal
-        AdjacencyList t = kruskal(getNodeCount(), nodeI2.length, nodeI2, nodeJ2, weights, INIT_PARTLY_COUNTING_SORT);
+        AdjacencyList t = kruskalMST(getNodeCount(), nodeI2.length, nodeI2, nodeJ2, weights, INIT_PARTLY_COUNTING_SORT);
 
         // Remove LEAVES 
         int newEdgeCount = t.getEdgeCount();

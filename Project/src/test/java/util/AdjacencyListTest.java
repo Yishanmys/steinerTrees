@@ -172,7 +172,7 @@ public class AdjacencyListTest {
     }
 
 //    /**
-//     * Test of mst method, of class AdjacencyList.
+//     * Test of steinerTree method, of class AdjacencyList.
 //     */
 //    @org.junit.Test
 //    public void testMST() {
@@ -183,8 +183,8 @@ public class AdjacencyListTest {
 //        int[] nodeJ = new int[]{1, 4, 1, 0, 1, 2, 1, 3};
 ////        float[] weights = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f, 0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
 //        float[] weights = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
-////        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights, AdjacencyList.INIT_PARTLY_COUNTING_SORT).mst(new int[] {0, 2, 4, 6});
-//        SteinerTree tree = new AdjacencyList(5, nodeI.length, nodeI, nodeJ, weights).mst(new int[] {0, 1, 2, 3});
+////        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights, AdjacencyList.INIT_PARTLY_COUNTING_SORT).steinerTree(new int[] {0, 2, 4, 6});
+//        SteinerTree tree = new AdjacencyList(5, nodeI.length, nodeI, nodeJ, weights).steinerTree(new int[] {0, 1, 2, 3});
 //        System.out.print("NodeI: [");
 //        for (int o : tree.getNodeI()) {
 //            System.out.print(o+", ");
@@ -200,10 +200,10 @@ public class AdjacencyListTest {
     
     
     /**
-     * Test of kruskal method, of class AdjacencyList.
+     * Test of kruskalMST method, of class AdjacencyList.
      */
     @org.junit.Test
-    public void testKruskal() {
+    public void testKruskalMST() {
         System.out.println("Kruskal");
         int nodeCount = 6;
         int edgeCount = 10;
@@ -211,7 +211,7 @@ public class AdjacencyListTest {
         int nodesJ[] = new int[]{ 0,3,5,4,1,2,2,2,2,2 };
         float weights[] = new float[]{ 6,5,2,6,3,5,1,5,4,6 };
         
-        AdjacencyList alist = AdjacencyList.kruskal(nodeCount, edgeCount, nodesI, nodesJ, weights, AdjacencyList.INIT_ARRAY_SORT);
+        AdjacencyList alist = AdjacencyList.kruskalMST(nodeCount, edgeCount, nodesI, nodesJ, weights, AdjacencyList.INIT_ARRAY_SORT);
         float sum = 0;
         System.out.println("edge count:" + alist.getEdgeCount());
         for(int i=0; i<alist.getEdgeCount(); i++) {
