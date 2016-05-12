@@ -54,12 +54,12 @@ public class PrizeCollecting {
 
         g = phaseOne(c, c_prime, targets, g);
         g = phaseTwo(g, prizes);
-
+        
         return g;
     }
 
-    public static AdjacencyList phaseOne(float c, float c_prime, int[] targets, AdjacencyList g) {
-        /* Phase I */
+    public static AdjacencyList phaseOne(float c, float c_prime, int[] targets, AdjacencyList g)
+    {
         while (c_prime < c) {
             /* C <- C' */
             c = c_prime;
@@ -87,25 +87,26 @@ public class PrizeCollecting {
         return g;
     }
 
-    public static AdjacencyList phaseTwo(AdjacencyList g, float[] prizes) {
-        /* Phase II */
-        System.out.println("Phase II");
-
+    public static AdjacencyList phaseTwo(AdjacencyList g, float[] prizes)
+    {   
         boolean moreToPrune = true;
 
+        /* Prune initially and as long as things got pruned. */
         while (moreToPrune)
         {
-            int[] nodes = g.getConnectedNodes();
+            int[] connected = g.getConnectedNodes();
             moreToPrune = false;
             
-            for (int node : nodes)
+            for (int node : connected)
             {
                 // only prune prunable nodes (leaves)
-                if (g.getDegree(node) == 1) {
+                if (g.getDegree(node) == 1)
+                {
                     float cc = g.getConnectionCost(node);
-                    if (prizes[node] < cc) {
+                    if (prizes[node] < cc)
+                    {
                         moreToPrune = true;
-                        g.prune(node);
+                        g = AdjacencyList.prune(g, node);
                     }
                 }
             }

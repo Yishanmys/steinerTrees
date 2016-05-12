@@ -184,12 +184,11 @@ public class AdjacencyList {
     public void print() {
         System.out.println("ListStarts: " + Arrays.toString(listStarts));;
         System.out.println("AdjacencyList: " + Arrays.toString(adjacencyList));;
-        for (int i = 0; i < getEdgeCount(); i++)
-        {
-            int from     = getFromNode(i);
-            int to       = getToNode(i);
+        for (int i = 0; i < getEdgeCount(); i++) {
+            int from = getFromNode(i);
+            int to = getToNode(i);
             float weight = getWeight(i);
-            
+
             System.out.println("Edge from node " + from + " to node " + to + "(weight: " + weight + ")");
         }
     }
@@ -328,17 +327,27 @@ public class AdjacencyList {
      */
     public final int getEdgeIndex(int i, int j) {
         int mindex = getStartOf(i);
-        int maxdex = getEndOf(i) - 1;
-        while (maxdex >= mindex) {
-            int index = (maxdex + mindex) / 2;
-            if (adjacencyList[index] == j) {
-                return index;
-            } else if (adjacencyList[index] > j) {
-                maxdex = index - 1;
-            } else {
-                mindex = index + 1;
+        int maxdex = getEndOf(i);
+
+        // O(n) alternative
+        for (int k = mindex; k < maxdex; k++) {
+            if (adjacencyList[k] == j) {
+                assert getFromNode(k) == i;
+                assert getToNode(k)   == j;
+                return k;
             }
         }
+
+//        while (maxdex >= mindex) {
+//            int index = (maxdex + mindex) / 2;
+//            if (adjacencyList[index] == j) {
+//                return index;
+//            } else if (adjacencyList[index] > j) {
+//                maxdex = index - 1;
+//            } else {
+//                mindex = index + 1;
+//            }
+//        }
         return -1;
     }
 
@@ -481,9 +490,6 @@ public class AdjacencyList {
             Logger.getLogger(AdjacencyList.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-//        for (int i=0; i<nodeI.length; i++){
-//            System.out.print("ad "+nodeI[i]+" "+nodeJ[i]+" "+distances[i]+"\n");
-//        }
         // First Kruskal
         AdjacencyList td = kruskal(getNodeCount(), nodeI.length, nodeI, nodeJ, distances, INIT_PARTLY_COUNTING_SORT);
 
@@ -513,9 +519,6 @@ public class AdjacencyList {
             weights[i] = weightList.get(i);
         }
 
-//        for (int i=0; i<nodeI2.length; i++){
-//            System.out.print("fk "+nodeI2[i]+" "+nodeJ2[i]+" "+weights[i]+"\n");
-//        }
         // Second Kruskal
         AdjacencyList t = kruskal(getNodeCount(), nodeI2.length, nodeI2, nodeJ2, weights, INIT_PARTLY_COUNTING_SORT);
 
@@ -622,8 +625,9 @@ public class AdjacencyList {
         float[] weights = new float[edgeCount];
 
         /* Fill nodeI and nodeJ like this (example for n = 5) */
- /* nodeI = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4] */
- /* nodeJ = [1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3] */
+        /* nodeI = [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4] */
+        /* nodeJ = [1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3] */
+        
         List<Integer> nodeIList = new ArrayList<>();
         List<Integer> nodeJList = new ArrayList<>();
         for (Integer t : targets) {
@@ -661,10 +665,10 @@ public class AdjacencyList {
      */
     public int[] getConnectedNodes() {
         HashSet<Integer> connected = new HashSet<>();
-        for (int n = 0; n < getNodeCount(); n++) {
-            if (getDegree(n) > 0) {
-                connected.add(n);
-            }
+        for (int n = 0; n < getNodeCount(); n++)
+        {
+            if (getDegree(n) > 0)
+                { connected.add(n); }
         }
         for (int m = 0; m < getEdgeCount(); m++) {
             connected.add(getToNode(m));
@@ -693,29 +697,35 @@ public class AdjacencyList {
     }
 
     /**
-     * Prune a node (and accompanying steiner nodes) from Graph.
+     * Prune a leaf node from Graph.
      *
+     * @param g The unpruned graph.
      * @param node The node to be pruned.
+     * @return The pruned graph.
      */
-    public void prune(int node)
+    public static AdjacencyList prune(AdjacencyList g, int node)
     {
-        int[] newAdj  = new int  [adjacencyList.length    - 2];
-        float[] newWs = new float[adjacencyWeights.length - 2];
+        assert g.getDegree(node) == 1;
+        int newEdgeCount = g.getEdgeCount() - 2;
+       
+        int[] newI   = new int[newEdgeCount];
+        int[] newJ   = new int[newEdgeCount];
+        float[] newW = new float[newEdgeCount];
+        
         int k = 0;
-
-        for (int j = 0; j < newAdj.length; j++) {
-            if ((listStarts[node] == j) || (adjacencyList[j+k] == node)) {
+        
+        for (int i = 0; i < g.getEdgeCount(); i++)
+        {
+            if (!((g.getFromNode(i) == node) || (g.getToNode(i) == node)))
+            {
+                newI[k] = g.getFromNode(i);
+                newJ[k] = g.getToNode(i);
+                newW[k] = g.getWeight(i);
                 k++;
             }
-            newAdj[j] = adjacencyList[j + k];
-            newWs[j]  = adjacencyWeights[j+k];
         }
-
-        for (int i = 0; i < listStarts.length; i++) {
-            listStarts[i] = Math.max(0, (listStarts[i] - 1));
-        }
-
-        adjacencyWeights = newWs;
-        adjacencyList = newAdj;
+        
+        AdjacencyList h = new AdjacencyList(g.getNodeCount(), newEdgeCount, newI, newJ, newW);
+        return h;
     }
 }

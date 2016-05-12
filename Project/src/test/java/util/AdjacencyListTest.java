@@ -232,14 +232,12 @@ public class AdjacencyListTest {
         int nodesJ_prime[] = ArrayUtils.addAll(nodesJ, nodesI);
         float weights_prime[] = ArrayUtils.addAll(weightsfoo, weightsfoo);
         
-        AdjacencyList al2 = new AdjacencyList(nodeCount, weightsfoo.length, nodesI_prime, nodesJ_prime, weights_prime);
+        AdjacencyList al2 = new AdjacencyList(6, weights_prime.length, nodesI_prime, nodesJ_prime, weights_prime);
         
-        float[] prizes = {2.7f, 3.1f, 0.6f, 7.2f, 2.2f, 4.0f};
+        float[] prizes = {10.7f, 3.1f, 1.6f, 7.2f, 2.2f, 4.0f};
         AdjacencyList prizeList = PrizeCollecting.MSTPCST(al2, new boolean[]{true,false,false,true,true,false}, prizes);
         
-        prizeList.print();
-        
-        assertNotNull(prizes);
+        assertNotNull(prizeList);
     }
     
 
@@ -276,30 +274,92 @@ public class AdjacencyListTest {
         int[] beforeJ = new int[]{3,0,2,1,3,2};
         float[] beforeW = new float[]{(float) 3.0,(float) 3.0, (float) 1.0,(float) 1.0,(float) 2.0,(float) 2.0};
         AdjacencyList before = new AdjacencyList(4, 6, beforeI, beforeJ, beforeW);
-        before.prune(0);
+        
+        for (int i = 0; i < before.getNodeCount(); i++) {
+            for (int j = 0; j < before.getNodeCount(); j++) {
+                if (before.getEdgeIndex(i, j) == -1)
+                {
+                    assertEquals(before.getEdgeIndex(j, i), -1);
+                }
+            }
+        }
+        
+        before = AdjacencyList.prune(before, 0);
+        
+        for (int i = 0; i < before.getNodeCount(); i++) {
+            for (int j = 0; j < before.getNodeCount(); j++) {
+                if (before.getEdgeIndex(i, j) == -1)
+                {
+                    assertEquals(before.getEdgeIndex(j, i), -1);
+                }
+            }
+        }
+        
+        for (int i = 0; i < before.getEdgeCount(); i++)
+        {
+            assertNotSame(0, before.getToNode(i));
+        }
         
         int[] afterI = new int[]{1,2,2,3};
         int[] afterJ = new int[]{2,1,3,2};
         float[] afterW = new float[]{(float) 1.0,(float) 1.0,(float) 2.0,(float) 2.0};
         AdjacencyList after = new AdjacencyList(4, 4, afterI, afterJ, afterW);
         
+        for (int i = 0; i < after.getNodeCount(); i++) {
+            for (int j = 0; j < after.getNodeCount(); j++) {
+                if (after.getEdgeIndex(i, j) == -1)
+                {
+                    assertEquals(after.getEdgeIndex(j, i), -1);
+                }
+            }
+        }
+        
         assertArrayEquals(before.getConnectedNodes(), after.getConnectedNodes());
         assertEquals(before.getTotalWeight(), after.getTotalWeight(), (float) 0.1);
-        
+                
         int[] bI = new int[]{0,3,1,3,2,3};
         int[] bJ = new int[]{3,0,3,1,3,2};
         float[] bW = new float[]{(float) 3.0,(float) 3.0, (float) 1.0,(float) 1.0,(float) 2.0,(float) 2.0};
         AdjacencyList b = new AdjacencyList(4, 6, bI, bJ, bW);
-        b.prune(0);
-        b.prune(1);
-        b.prune(2);
+        
+        for (int i = 0; i < b.getNodeCount(); i++) {
+            for (int j = 0; j < b.getNodeCount(); j++) {
+                if (b.getEdgeIndex(i, j) == -1)
+                {
+                    assertEquals(b.getEdgeIndex(j, i), -1);
+                }
+            }
+        }
+        
+        b = AdjacencyList.prune(b, 0);
+        b = AdjacencyList.prune(b, 1);
+        b = AdjacencyList.prune(b, 2);
+        
+        for (int i = 0; i < b.getNodeCount(); i++) {
+            for (int j = 0; j < b.getNodeCount(); j++) {
+                if (b.getEdgeIndex(i, j) == -1)
+                {
+                    assertEquals(b.getEdgeIndex(j, i), -1);
+                }
+            }
+        }
         
         int[] aI = new int[]{};
         int[] aJ = new int[]{};
         float[] aW = new float[]{};
         AdjacencyList a = new AdjacencyList(4, 0, aI, aJ, aW);
         
+        for (int i = 0; i < a.getNodeCount(); i++) {
+            for (int j = 0; j < a.getNodeCount(); j++) {
+                if (a.getEdgeIndex(i, j) == -1)
+                {
+                    assertEquals(a.getEdgeIndex(j, i), -1);
+                }
+            }
+        }
+        
         assertArrayEquals(b.getConnectedNodes(), a.getConnectedNodes());
         assertEquals(b.getTotalWeight(), a.getTotalWeight(), (float) 0.1);
+        
     }
 }
