@@ -180,17 +180,38 @@ public class AdjacencyList {
             }
         }
     }
+    
+    /**
+     * Obvious print method is obvious.
+     */
+    public void print()
+        { System.out.println(this.toString()); }
 
-    public void print() {
-        System.out.println("ListStarts: " + Arrays.toString(listStarts));;
-        System.out.println("AdjacencyList: " + Arrays.toString(adjacencyList));;
-        for (int i = 0; i < getEdgeCount(); i++) {
+    /**
+     * Returns a human readable form of listStarts, adjacencyList and all edges.
+     * @return String representation of this graph.
+     */
+    @Override
+    public String toString()
+    {
+        String str = "";
+        
+        str += "ListStarts: ";
+        str += Arrays.toString(listStarts);
+        str += "\nAdjacencyList: ";
+        str += Arrays.toString(adjacencyList);
+        str += "\n";
+        
+        for (int i = 0; i < getEdgeCount(); i++)
+        {
             int from = getFromNode(i);
             int to = getToNode(i);
             float weight = getWeight(i);
 
-            System.out.println("Edge from node " + from + " to node " + to + "(weight: " + weight + ")");
+            str += "Edge from node " + from + " to node " + to + "(weight: " + weight + ")\n";
         }
+        
+        return str;
     }
 
     /**
@@ -463,20 +484,15 @@ public class AdjacencyList {
         for (int i = 0; i < targets.length; i++) {
             final int target = i;
             isTarget[targets[target]] = true;
-            executor.execute(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    dijkstras[target] = new Dijkstra(AdjacencyList.this, targets[target], isTarget, targets.length);
-                    int counter = target * (targets.length - 1);
-                    for (int j = 0; j < targets.length; j++) {
-                        if (j != target) {
-                            nodeI[counter] = targets[target];
-                            nodeJ[counter] = targets[j];
-                            distances[counter] = dijkstras[target].getDistanceTo(targets[j]);
-                            counter++;
-                        }
+            executor.execute(() -> {
+                dijkstras[target] = new Dijkstra(AdjacencyList.this, targets[target], isTarget, targets.length);
+                int counter = target * (targets.length - 1);
+                for (int j = 0; j < targets.length; j++) {
+                    if (j != target) {
+                        nodeI[counter] = targets[target];
+                        nodeJ[counter] = targets[j];
+                        distances[counter] = dijkstras[target].getDistanceTo(targets[j]);
+                        counter++;
                     }
                 }
             });
@@ -568,13 +584,12 @@ public class AdjacencyList {
         for (int i = 0; i < nodeI2.length; i++) {
 
             Dijkstra correctDijkstra = null;
-            for (int j = 0; j < ds.length; j++) {
-                if (ds[j].getSource() == nodeI2[i]) {
-                    correctDijkstra = ds[j];
+            for (Dijkstra d : ds) {
+                if (d.getSource() == nodeI2[i]) {
+                    correctDijkstra = d;
                 }
             }
 
-            int[] foo = correctDijkstra.getNodesOfShortestPathTo(nodeJ2[i]);
             for (Integer edge : correctDijkstra.getEdgesOfShortestPathTo(nodeJ2[i])) {
                 IList.add(original.getFromNode(edge));
                 JList.add(original.getToNode(edge));

@@ -185,14 +185,14 @@ public class AdjacencyListTest {
 //        float[] weights = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 ////        SteinerTree tree = new AdjacencyList(9, nodeI.length, nodeI, nodeJ, weights, AdjacencyList.INIT_PARTLY_COUNTING_SORT).steinerTree(new int[] {0, 2, 4, 6});
 //        SteinerTree tree = new AdjacencyList(5, nodeI.length, nodeI, nodeJ, weights).steinerTree(new int[] {0, 1, 2, 3});
-//        System.out.print("NodeI: [");
+//        System.out.toString("NodeI: [");
 //        for (int o : tree.getNodeI()) {
-//            System.out.print(o+", ");
+//            System.out.toString(o+", ");
 //        }
 //        System.out.println("]");
-//        System.out.print("NodeJ: [");
+//        System.out.toString("NodeJ: [");
 //        for (int o : tree.getNodeJ()) {
-//            System.out.print(o+", ");
+//            System.out.toString(o+", ");
 //        }
 //        System.out.println("]");
 //        System.out.println("Total Weight: "+tree.getTotalWeight(false));
@@ -254,7 +254,7 @@ public class AdjacencyListTest {
 //        float[] weights = new float[]{0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f, 0.7f, 0.3f, 0.3f, 0.1f, 0.1f, 0.3f, 0.5f, 0.2f, 1.0f, 0.4f, 0.3f};
         float[] weights = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
         AdjacencyList list = new AdjacencyList(5, nodeI.length, nodeI, nodeJ, weights);
-//        list.print();
+//        list.toString();
         Dijkstra dijkstra = new Dijkstra(list, 3);
         for(int i=0; i<5; i++) {
             dijkstra.getDistanceTo(i);
