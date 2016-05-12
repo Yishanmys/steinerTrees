@@ -325,29 +325,21 @@ public class AdjacencyList {
      * @param j to node
      * @return index of Edge or -1 if not adjacent
      */
-    public final int getEdgeIndex(int i, int j) {
+    public final int getEdgeIndex(int i, int j)
+    {
         int mindex = getStartOf(i);
         int maxdex = getEndOf(i);
 
-        // O(n) alternative
-        for (int k = mindex; k < maxdex; k++) {
-            if (adjacencyList[k] == j) {
-                assert getFromNode(k) == i;
-                assert getToNode(k)   == j;
-                return k;
+        while (maxdex >= mindex) {
+            int index = (maxdex + mindex) / 2;
+            if (adjacencyList[index] == j) {
+                return index;
+            } else if (adjacencyList[index] > j) {
+                maxdex = index - 1;
+            } else {
+                mindex = index + 1;
             }
         }
-
-//        while (maxdex >= mindex) {
-//            int index = (maxdex + mindex) / 2;
-//            if (adjacencyList[index] == j) {
-//                return index;
-//            } else if (adjacencyList[index] > j) {
-//                maxdex = index - 1;
-//            } else {
-//                mindex = index + 1;
-//            }
-//        }
         return -1;
     }
 
