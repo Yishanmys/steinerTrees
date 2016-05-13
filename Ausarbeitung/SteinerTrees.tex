@@ -16,6 +16,12 @@
 Das vorliegende Projekt findet im Rahmen des Moduls ``Parallele Algorithmen und Datenverarbeitung'' statt. In dem Projekt geht es darum, einen gegebenen
 Algorithmus zu parallelisieren, in unserem Fall einen Algorithmus zur Approximation einer Lösung des minimalen Steinerbaum-Problems.
 
+Ein interessanter Anwendungsfall von Steinerbäumen sind Protein-Protein-Interaktionsnetzwerke in der Biologie. In einem solchen Netzwerk
+reräsentieren die Knoten Proteine und die Gewichte der Kanten beschreiben die Wahrscheinlichkeit, mit der das jeweilige Paar Proteine miteinander
+interagiert. Solche Netzwerke sind in der Regel sehr groß, so dass man häufig an Teilgraphen dieser Netzwerke interessiert ist.
+Diese Teilgraphen können durch Steinerbäume beschrieben werden, indem man eine Menge terminaler Knoten festlegt (siehe unten).
+
+
 \section{Einleitung}
 Ein Graph $G$ ist beschrieben durch eine Knotenmenge $V$, eine Kantenmenge $E$ und optional eine Gewichtsfunktion $w$, die jedem Knoten $v \in V$
 eine nichtnegative reelle Zahl zuweist, d.h. $G = (V,E,w)$. Im Folgenden wird davon ausgegangen, dass der gegebene Graph zusammenhängend ist,
@@ -99,6 +105,9 @@ zu allen Targets berechnet wurde und nicht mehr zu allen Knoten.\\
 Um den Speicherbedarf des Ergebnisses zu reduzieren, wird nicht für jeden Knoten der gesamte Pfad gespeichert, sondern nur jeweils der Vorgängerknoten.
 Der Speicherbedarf sinkt dadurch von $O(N^2)$ auf $O(N)$, jedoch steigt die Zugriffszeit auf den kürzesten Pfad von $O(1)$ auf $O(log(N))$.
 
+Für zusammenhängende Graphen hat der Dijkstra-Algorithmus eine Laufzeit von $\mathcal{O}(|E|\log|V|)$. Durch die Verwendung eines Fibonacci-Heaps
+für die Realisierung der Prioritätswarteschlange kann die Laufzeit auf $\mathcal{O}(|V|\log|V| + |E|)$ reduziert werden.
+
 
 
 \subsection{Minimale Spannbäume}
@@ -117,7 +126,8 @@ Ein möglicher Algorithmus für die Berechnung minimaler Spannbäume ist der Alg
       {
 	  MAKE-SET(v)
       }
-      Sortiere Kanten aus E in nichtfallender Reihenfolge nach dem Gewicht w \\
+      Sortiere Kanten aus E in nichtfallender Reihenfolge nach dem Gewicht w, d.h. in dieser Sortierung gilt für alle Kantenpaare $e_i$ und $e_j$:
+    $e_i \leq e_j$, falls $w(e_i) \leq w(e_j)$ \\
       \For{$(u,v) \in E$ in nichtfallender Reihenfolge nach ihren Gewichten}
       {
 	  \If{FIND-SET(u) $\neq$ FIND-SET(v)}
