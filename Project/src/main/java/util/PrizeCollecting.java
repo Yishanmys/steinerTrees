@@ -72,9 +72,11 @@ public class PrizeCollecting {
                     dijkstras);
 
             /* Solve MST on G' and obtain tree T */
-                        /* Convert T into original Graph G and obtain a subgraph T' */
-            AdjacencyList t_prime = g_prime.steinerTree(targets, g, dijkstras);
+            AdjacencyList t = g_prime.steinerTree(targets);
 
+            /* Convert T into original Graph G and obtain a subgraph T' */
+            AdjacencyList t_prime = t.embed(g, dijkstras);
+            
             /* C' <- Σ(e ∈ T) c_e */
             c_prime = t_prime.getTotalWeight();
 

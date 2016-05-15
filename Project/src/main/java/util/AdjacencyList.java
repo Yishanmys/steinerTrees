@@ -457,20 +457,18 @@ public class AdjacencyList {
     }
 
     /**
-     * Retruns a SteinerTree which is a 2-approximation of the minimum steiner
+     * Returns a SteinerTree which is a 2-approximation of the minimum steiner
      * tree of the graph represented by this AdjacencyList. The resulting
      * SteinerTree is in fact a connected, directed sub graph which contains all
      * targets and nodes in the shortest path between the targets. The total
      * weight of all edges is approximately as low as possible.
      *
      * @param targets The targets that have to be in the resulting tree (graph)
-     * @param original The original graph for the steiner Trees.
-     * @param ds Dijkstra Objects for all paths in the original graph. 
      * @return The SteinerTree representing a graph in the form of to node
      * arrays. The graph is described via the edges from nodeI[n] to nodeJ[n].
      */
-    public AdjacencyList steinerTree(final int[] targets, AdjacencyList original, Dijkstra[] ds) {
-
+    public AdjacencyList steinerTree(final int[] targets)
+    {
         final boolean[] isTarget = new boolean[getNodeCount()];
 
         // Dijkstra from all Targets to all Nodes
@@ -577,47 +575,7 @@ public class AdjacencyList {
             }
         }
 
-        List<Integer> IList = new ArrayList<>();
-        List<Integer> JList = new ArrayList<>();
-        List<Float> WList = new ArrayList<>();
-
-        for (int i = 0; i < nodeI2.length; i++) {
-
-            Dijkstra correctDijkstra = null;
-            for (Dijkstra d : ds) {
-                if (d.getSource() == nodeI2[i]) {
-                    correctDijkstra = d;
-                }
-            }
-
-            for (Integer edge : correctDijkstra.getEdgesOfShortestPathTo(nodeJ2[i])) {
-                IList.add(original.getFromNode(edge));
-                JList.add(original.getToNode(edge));
-                WList.add(original.getWeight(edge));
-            }
-        }
-
-        assert IList.size() == JList.size();
-        assert JList.size() == WList.size();
-
-        int[] newNodeI = new int[IList.size()];
-        int[] newNodeJ = new int[JList.size()];
-        float[] newWeights = new float[WList.size()];
-
-        for (int i = 0; i < newNodeJ.length; i++) {
-            newNodeI[i] = IList.get(i);
-            newNodeJ[i] = JList.get(i);
-            newWeights[i] = WList.get(i);
-        }
-
-        int fooNodeCount = this.getNodeCount();
-        int fooEdgeCount = newNodeI.length;
-
-        return new AdjacencyList(fooNodeCount,
-                2 * fooEdgeCount,
-                ArrayUtils.addAll(newNodeI, newNodeJ),
-                ArrayUtils.addAll(newNodeJ, newNodeI),
-                ArrayUtils.addAll(newWeights, newWeights));
+        return new AdjacencyList(getNodeCount(), weights2.length, nodeI2, nodeJ2, weights2);
     }
 
     /**
@@ -740,5 +698,67 @@ public class AdjacencyList {
         
         AdjacencyList h = new AdjacencyList(g.getNodeCount(), newEdgeCount, newI, newJ, newW);
         return h;
+    }
+    
+    /**
+     * Embeds this graph in a larger graph.
+     * @param original Graph to be embedded in.
+     * @param ds Dijkstra-objects for original graph.
+     * @return 
+     */
+    public AdjacencyList embed(AdjacencyList original, Dijkstra[] ds)
+    {
+        List<Integer> IList = new ArrayList<>();
+        List<Integer> JList = new ArrayList<>();
+        List<Float> WList = new ArrayList<>();
+        
+        int[] fooNodeI, fooNodeJ;
+        fooNodeI = new int[getEdgeCount()];
+        fooNodeJ = new int[getEdgeCount()];
+        
+        for (int i = 0; i < getEdgeCount(); i++)
+        {
+            fooNodeI[i] = getFromNode(i);
+            fooNodeJ[i] = getToNode(i);
+        }
+
+        for (int i = 0; i < fooNodeI.length; i++) {
+
+            Dijkstra correctDijkstra = null;
+            for (Dijkstra d : ds) {
+                if (d.getSource() == fooNodeI[i]) {
+                    correctDijkstra = d;
+                }
+            }
+
+            for (Integer edge : correctDijkstra.getEdgesOfShortestPathTo(fooNodeJ[i])) {
+                IList.add(original.getFromNode(edge));
+                JList.add(original.getToNode(edge));
+                WList.add(original.getWeight(edge));
+            }
+        }
+
+        assert IList.size() == JList.size();
+        assert JList.size() == WList.size();
+
+        int[] newNodeI = new int[IList.size()];
+        int[] newNodeJ = new int[JList.size()];
+        float[] newWeights = new float[WList.size()];
+
+        for (int i = 0; i < newNodeJ.length; i++) {
+            newNodeI[i] = IList.get(i);
+            newNodeJ[i] = JList.get(i);
+            newWeights[i] = WList.get(i);
+        }
+
+        int fooNodeCount = this.getNodeCount();
+        int fooEdgeCount = newNodeI.length;
+
+        return new AdjacencyList(fooNodeCount,
+                2 * fooEdgeCount,
+                ArrayUtils.addAll(newNodeI, newNodeJ),
+                ArrayUtils.addAll(newNodeJ, newNodeI),
+                ArrayUtils.addAll(newWeights, newWeights));
+ 
     }
 }
