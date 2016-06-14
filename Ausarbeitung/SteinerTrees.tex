@@ -26,42 +26,67 @@ Diese Teilgraphen können durch Steinerbäume beschrieben werden, indem man eine
 Ein Graph $G$ ist beschrieben durch eine Knotenmenge $V$, eine Kantenmenge $E$ und optional eine Gewichtsfunktion $w$, die jedem Knoten $v \in V$
 eine nichtnegative reelle Zahl zuweist, d.h. $G = (V,E,w)$. Im Folgenden wird davon ausgegangen, dass der gegebene Graph zusammenhängend ist,
 d.h. es existiert für jedes Paar von Knoten in dem Graphen ein Pfad, der diese verbindet.
-Ein Graph $S = (V_S, E_S, w)$ ist ein Steinerbaum von einem Graphen $G = (V, E, w)$ für eine Knotenmenge $T \subset V$, wenn S ein Baum ist, alle Blätter
-von S int T enthalten sind und $T \subseteq V_S$ \cite{steinerProblem}. Die Knoten der Menge T werden Terminale genannte und die Knoten der Menge
-$V_S \backslash T$ Nichtterminale. Ein Steinerbaum S von G ist minimal, wenn die Summe der Kantengewichte von S
-unter allen Steinerbäumen $S'$ von G minimal ist.
+
+Ein Graph $St = (V_{St}, E_{St}, w)$ ist ein Steinerbaum von einem Graphen $G = (V, E, w)$ für eine Knotenmenge $S \subset V$, wenn $St$ ein Baum ist, alle Blätter von $St$ in $S$ enthalten sind und $S \subseteq V_S$\cite{steinerProblem}. 
+
+Die Knoten der Menge $S$ werden Terminale genannte und die Knoten der Menge
+$V_S \setminus S$ Nichtterminale. Ein Steinerbaum $St$ von $G$ ist minimal, wenn die Summe der Kantengewichte von $St$ unter allen Steinerbäumen $S'$ von G minimal ist.
+\smallskip
 
 Die Berechnung minimaler Steinerbäume ist NP-Vollständig. Im folgenden Abschnitt wird ein Algorithmus zur Approximation minimaler Steinerbäume vorgestellt.
 
-
-
 \section{Verwendeter Algorithmus}
 \label{sec:mst}
-Der Algorithmus (\ref{mst}) liefert eine 2-Approximation für die Berechnung minimaler Steinerbäume.
+Der Algorithmus (\ref{mst}) liefert eine 2-Approximation für die Berechnung minimaler Steinerbäume wobei Knotenpreise gegen Kantengewichte aufgewogen werden.
+
+Wir berufen uns hierbei auf den Algorithmus von Akhmedov et al.\citep{akhmedov2014}, den wir hier in leicht korrigierter Form ebenfalls benutzen.\smallskip
+
+Der Algorithmus von Akhmedov et al. enthält so wie er veröffentlicht wurde einen Fehler in Phase I. Wird die Schleife wie dort angegeben solange durchlaufen, wie $C' \leq C$, entsteht eine Endlosschleife und der Algorithmus terminiert nicht.
+\bigskip
+
 \begin{algorithm}
   \label{mst}
   \caption{2-Approximation für die Berechnung minimaler Steinerbäume}
-      \textbf{Input: } Gewichteter Graph $G = (V,E,w)$; Menge T terminaler Knoten
-      \begin{enumerate}
-	\item Berechne den complete distance network $G_D = (T, E_D, w)$.
-	\item Berechne einen minimalen Spannbaum $S_D$ von $G_D$.
-	\item Wandle $S_D$ in einen gewichteten Teilgraphen N um, indem jede Kante aus $S_D$ durch den Korrespondierenden kürzesten Pfad ersetzt wird.
-	\item Berechne einen minimalen Spannbaum $S_N$ für N.
-	\item Wandle $S_N$ in einen Steinerbaum um, indem nacheinander jeder Blattknoten entfernt wird, der kein Terminal ist.
-      \end{enumerate}
+      \textbf{Input: } Ungerichteter Graph mit Kantengewichten $G = (V,E, w)$; Menge $S$ terminaler Knoten; Preise für alle Knoten in $S$.
+      
+\begin{enumerate}
+\item\textbf{Initialisierung:}
 
-  \hspace{1cm}
+\begin{enumerate}
+\item Wir setzen die Variable $C$ auf $\infty$.
+\item Wir setzen die Variable $C'$ auf die Summe aller Kantengewichte im gesamten Graphen.
+\end{enumerate}
+
+\item\textbf{Phase I:}\\
+Solange $C' < C$ tue folgendes:
+
+\begin{enumerate}
+\item $C$ wird auf $C'$ gesetzt.
+\item Wir berechnen zunächst ein complete distance network und konstruieren dann einen Graphen $G' = (V', E', w)$. $V' = S$ und Elemente von $E'$ korrespondieren jeweils zu den kürzesten Pfaden aus $G$.
+\item Mittels des Kruskal-Algorithmus (\ref{kruskal}) berechnen wir einen minimal spanning tree von $G'$ ($T$).
+\item Wir setzen $C'$ auf die Summe aller Kantengewichte in $T$.
+\item $T$ wird zurück in den Originalgraphen $G$ eingebettet, wir erhalten einen Subgraphen $T'$.
+\item $S$ wird auf alle Knoten in $T'$ gesetzt.
+\end{enumerate}
+
+\item\textbf{Phase II:}\\
+Solange noch nicht alle Blätter $v$ auf $T'$ gepruned wurden, tue folgendes:
+\begin{enumerate}
+\item Berechne die Verbindungskosten $cc_v$ von $v$.
+\item Wenn Preis $p_v < cc_v$, dann prune $v$ aus dem Baum.
+\end{enumerate} 
+\end{enumerate}      
 \end{algorithm}
-\hspace{1cm}
-
 
 \section{Implementation}
 \subsection{Repräsentation des Graphen}
 Zur Repräsentation des Graphen werden zwei Datenstrukturen verwendet.\\
 \\
-Zum einen eine Form (Kanten-Array-Form) die als Eingabe, Ausgabe und zur Berechnung des Spannbaums verwendet wird. Diese besteht aus drei Arrays, $nodeI$, $nodeJ$ und $weights$, sowie der Anzahl der Knoten ($nodeCount$) und der Kanten ($edgeCount$). Der Graph enthält alle Knoten mit Index $n$ mit $ 0 \le n < nodeCount$ und alle gerichteten Kanten von Knoten $nodeI[i]$ zu $nodeJ[i]$ $\forall 0 \le i < edgeCount$. Das Gewicht der Kante $i$ wird dabei durch $weights[i]$ beschrieben.\\
+Zum einen eine Form (Kanten-Array-Form) die als Eingabe, Ausgabe und zur Berechnung des Spannbaums verwendet wird. Diese besteht aus drei Arrays, $nodeI$, $nodeJ$ und $weights$, sowie der Anzahl der Knoten ($nodeCount$) und der Kanten ($edgeCount$). Der Graph enthält alle Knoten mit Index $n$ mit $ 0 \le n < nodeCount$ und alle gerichteten Kanten von Knoten $nodeI[i]$ zu $nodeJ[i]$ $\forall \,i\,.\,0 \le i < edgeCount$. Das Gewicht der Kante $i$ wird dabei durch $weights[i]$ beschrieben.\\
 \\
-Zum anderen arbeitet die Dijkstra-Implementation mit einer Darstellung durch Adjazenslisten. Hierbei werden zwei Int-Arrays verwendet. Das erste ($adjacencyList$) ist eine Aneinanderreihung aller Adjazenslisten und hat somit die Länge $edgeCount$. Das zweite ($listStart$) speichert an der Stelle $i$ den Startpunkt der Adjazensliste von Knoten $i$ innerhalb des ersten Arrays. Formal ist die Menge der Kanten also:\\
+Zum anderen arbeitet die Dijkstra-Implementation mit einer Darstellung durch Adjazenslisten. Hierbei werden zwei Int-Arrays verwendet.
+
+Das erste ($adjacencyList$) ist eine Aneinanderreihung aller Adjazenslisten und hat somit die Länge $edgeCount$. Das zweite ($listStart$) speichert an der Stelle $i$ den Startpunkt der Adjazensliste von Knoten $i$ innerhalb des ersten Arrays. Formal ist die Menge der Kanten also:\\
 $\{ (i,j) | 0 \le i < nodeCount, 
 j \in \{adjacencyList[n]|listStart[i] \le n < endOf(i)\}$\\ mit $endOf(i) = 
 \left\{
@@ -70,21 +95,30 @@ j \in \{adjacencyList[n]|listStart[i] \le n < endOf(i)\}$\\ mit $endOf(i) =
 		edgeCount & \mbox{falls } i+1 \ge nodeCount
 	\end{array}
 \right.$.
+\bigskip
+
+Es ist anzumerken, dass in unserer Implementierung im Verlauf des Algorithmus die Knotenanzahl des Graphen immer konstant bleibt. Einige Knoten sind hier nicht mit des Rest des Graphen verbunden (haben keine Kanten die zu ihnen hin oder von ihnen weg führen), werden jedoch für die Knotenanzahl noch mitgezählt.
+\smallskip
+
+Dies wurde so implementiert, damit wir über die Knotenanzahl eines Graphen eindeutig einzelne Knoten referenzieren können (d.h. Knoten 4 im Originalgraph ist auch immer noch Knoten 4 in bearbeiteten Graphen, auch wenn dieser Knoten inzwischen z.B. beim Pruning entfernt wurde). So umegehen wir komplexe Neuberechnungen des Graphen und der Knoten. Die hierbei entstehenden Laufzeitkosten sind vernachlässigbar.   
 
 \subsubsection{Konvertierung von Kanten-Array-Form in Adjazenslisten-Form}
-Es wurden drei Algorithmen zur Konvertierung implementiert und auf ihre Effiziens getestet.\\
-\textbf{ArraySort}\\
+Es wurden drei Algorithmen zur Konvertierung implementiert und auf ihre Effizienz getestet.
+
+\begin{itemize}
+\item\textbf{ArraySort}\\
 Dieser Algorithmus nutzt den bereits implementierten Sortieralgorithmus von Java, wobei der Comperator überschrieben wurde,
 sodass die Kanten erst entsprechend dem Startknoten und zweitranging nach dem Zielknoten sortiert werden. Dieser Algorithmus arbeitet
-besonders effizient, falls die Eingabe bereits vorsortiert ist. Die allgemeine Effiziensklasse ist jedoch $O(M^2)$ wobei $M$ der Anzahl der Kanten beschreibt.\\
-\textbf{CountingSort}\\
+besonders effizient, falls die Eingabe bereits vorsortiert ist. Die allgemeine Effizienzklasse ist jedoch $\mathcal{O}(M^2)$ wobei $M$ der Anzahl der Kanten beschreibt.
+\item\textbf{CountingSort}\\
 Dieser Algorithmus macht sich zu Nutzen, dass es sich beim Sortieren um einen endlichen, abzählbaren Wertebereich ($0 \le n < N$) handelt.
-Durch die temporäre überführung in eine Adjazensmatrix wird die Optimale Effiziensklasse $O(N^2)$ mit $N$ der Anzahl der Knoten erreicht.
-Dies geschieht jedoch auf Kosten des Speicherbedarfs welcher in jedem Fall $N^2$ beträgt.\\
-\textbf{PartlyCountingSort}\\
-Da der CountingSort Algorithmus gerade für spärliche Graphen (Diche $< 1\%$) nicht sinnvoll ist, arbeitet dieser Algorithmus etwas dynamischer.
+Durch die temporäre überführung in eine Adjazensmatrix wird die Optimale Effizienzklasse $\mathcal{O}(N^2)$ mit $N$ der Anzahl der Knoten erreicht.
+Dies geschieht jedoch auf Kosten des Speicherbedarfs welcher in jedem Fall $N^2$ beträgt.
+\item\textbf{PartlyCountingSort}\\
+Da der CountingSort Algorithmus gerade für spärliche Graphen (Dichte $< 1\%$) nicht sinnvoll ist, arbeitet dieser Algorithmus etwas dynamischer.
 Für jeden Knoten wird eine Ajdazensliste in Form einer ArrayList mit den entsprechenden Folgeknoten gefüllt. Jede dieser Listen wird anschließend sortiert
-und anschließend in das adjacencyList-Array geschrieben. Die Effiziensklasse ist $O(N^3)$, jedoch im zu erwartenden Durchschnitt am besten geeignet.
+und anschließend in das adjacencyList-Array geschrieben. Die Effizienzklasse ist $\mathcal{O}(N^3)$, jedoch im zu erwartenden Durchschnitt am besten geeignet.
+\end{itemize}
 
 \subsubsection{Iteration über Folgeknoten}
 Um über die Folgeknoten eines Knotens $i$ zu iterieren gibt es verschiedene Möglichkeiten.
@@ -103,7 +137,7 @@ Der Konstruktor erwartet somit einen Graphen, repräsentiert als AdjacencyList, 
 angegeben werden, um die Rechenzeit des Dijkstra's zu reduzieren. In diesem Fall ist jedoch nur noch gewährleistet, dass die kürzesten Pfade vom Startknoten
 zu allen Targets berechnet wurde und nicht mehr zu allen Knoten.\\
 Um den Speicherbedarf des Ergebnisses zu reduzieren, wird nicht für jeden Knoten der gesamte Pfad gespeichert, sondern nur jeweils der Vorgängerknoten.
-Der Speicherbedarf sinkt dadurch von $O(N^2)$ auf $O(N)$, jedoch steigt die Zugriffszeit auf den kürzesten Pfad von $O(1)$ auf $O(log(N))$.
+Der Speicherbedarf sinkt dadurch von $\mathcal{O}(N^2)$ auf $\mathcal{O}(N)$, jedoch steigt die Zugriffszeit auf den kürzesten Pfad von $\mathcal{O}(1)$ auf $\mathcal{O}(\log{}N)$.
 
 Für zusammenhängende Graphen hat der Dijkstra-Algorithmus eine Laufzeit von $\mathcal{O}(|E|\log|V|)$. Durch die Verwendung eines Fibonacci-Heaps
 für die Realisierung der Prioritätswarteschlange kann die Laufzeit auf $\mathcal{O}(|V|\log|V| + |E|)$ reduziert werden.
@@ -113,8 +147,8 @@ für die Realisierung der Prioritätswarteschlange kann die Laufzeit auf $\mathc
 \subsection{Minimale Spannbäume}
 Die Ausführungen in diesem Unterabschnitt richten sich nach \cite[Kapitel 23]{cormen}.
 Der in Abschnitt (\ref{sec:mst}) beschreibene Algorithmus benötigt an zwei Stellen den minimalen Spannbaum eines Graphen $G=(V,E,w)$. Ein Graph
-$G_S=(V_S,E_S,w)$ ist ein minimaler Spannbaum für den Graphen G genau dann, wenn $G_S$ eine Teilgraph von G ist, alle Knoten von G enthält und die Summe
-seiner Kantengewichte minimal ist. D.h. für $G_S$ muss folgendes gelten: $V_S=V, E_S \subseteq E$ und $\sum_{e \in E_S} w(w)$ muss minimal sein.
+$G_S=(V_S,E_S,w)$ ist ein minimaler Spannbaum für den Graphen $G$ genau dann, wenn $G_S$ ein Teilgraph von $G$ ist, alle Knoten von $G$ enthält und die Summe seiner Kantengewichte minimal ist. D.h. für $G_S$ muss folgendes gelten: $V_S=V, E_S \subseteq E$ und $\sum_{e \in E_S} w(e)$ muss minimal sein.
+\smallskip
 
 Ein möglicher Algorithmus für die Berechnung minimaler Spannbäume ist der Algorithmus von Kruskal. Dieser ist in Algorithmus (\ref{kruskal}) dargestellt.
 \begin{algorithm}
@@ -148,7 +182,7 @@ minimalen Spannbaums zum Graphen G.
 Für die Verwaltung des Waldes wird eine Datenstruktur disjunkter Mengen mit den Operationen MAKE-SET, FIND-SET und UNION benötigt. Die Operation MAKE-SET
 erstellt eine leere Menge, FIND-SET findet die Menge, die das gegebene Element enthält, und UNION vereinigt zwei Mengen. In unserer Implementation
 verwenden wir hierfür eine Version, die verkettete Listen für die Repräsentation der Mengen nutzt \cite[Kapitel 21.2]{cormen}. Hier wird für jede
-Menge ein repräsentatives Element ausgeweisen (meist das erste Element in der jeweiligen Liste), durch das jede Menge eindeutig repräsentiert wird.
+Menge ein repräsentatives Element ausgewiesen (meist das erste Element in der jeweiligen Liste), durch das jede Menge eindeutig repräsentiert wird.
 Zusätzlich dazu erhält jedes Element ein Attribut $\mathcal{R}$, mit dem das repräsentative Element der Menge gespeichert wird, zu dem das
 jeweilige Element gehört.
 Somit benötigt die Operation FIND-SET(E) konstante Laufzeit, da nur das Attribut $\mathcal{R}$ des Elements E abgefragt werden muss.
@@ -157,8 +191,53 @@ Liste der Menge $M_1$ aktualisiert werden und die Attribute $\mathcal{R}$ der El
 $M_1$ gesetzt werden. Hier ist es somit am effizientesten, die kleinere der beiden Mengen $M_1$ und $M_2$ zur größeren hinzuzufügen.
 Schließlich kann die Liste der Menge $M_2$ gelöscht werden.
 
-Insgesamt besitzt der Algorithmus von Kruskal eine Laufzeit von $\mathcal{O}(|E|\log(|V|))$.
+Insgesamt hat der Algorithmus von Kruskal eine Laufzeit von $\mathcal{O}(|E|\log(|V|))$.
 
+\subsection{Price-collecting}
+
+Das Pricecollecting in Phase II von Algorithmus \ref{mst} hat als Grundlage, dass für jeden Knoten im Ergebnisbaum von Phase I die Verbindungskosten (das heißt das Kantengewicht der einzigen Kante dieses Knotens) abgefragt und mit dem Preis für den entsprechenden Knoten verglichen wird.
+
+Sind die Verbindungskosten größer als der Preis, so wird der Knoten aus dem Baum entfernt (\emph{gepruned}). Sind die Verbidungskosten gleich oder geringer dem Preis, so passiert nichts.
+
+Dies wird so lange durchgeführt, bis es keine Knoten mehr gibt, die noch gepruned werden könnten. Hierbei ist zu beachten, dass nachdem ein Knoten entfernt wurde, eventuell andere Knoten zusätzliche Kandidaten für pruning werden.
+
+\subsubsection{Pruning}
+
+Beim Vorgang des Entfernen eines Knotens aus einem Baum (genannt \emph{pruning}), wird in unserer Implementierung ein neuer Graph basierend auf einem Inputgraph zurück gegeben. Beide Graphen haben die gleiche Anzahl Knoten, allerdings werden alle Kanten von und zu dem zu entfernenden Knoten gelöscht.
+\smallskip
+
+Es ist anzumerken, dass für diese Zwecke vorgesehen ist, dass nur Knoten mit einer einzigen Kante entfernt werden können.
+\bigskip
+
+\begin{lstlisting}
+public static AdjacencyList prune(AdjacencyList g, int node)
+{
+    assert g.getDegree(node) == 1;
+    int newEdgeCount = g.getEdgeCount() - 2;
+       
+    int[] newI   = new int[newEdgeCount];
+    int[] newJ   = new int[newEdgeCount];
+    float[] newW = new float[newEdgeCount];
+        
+    int k = 0;
+        
+    for (int i = 0; i < g.getEdgeCount(); i++)
+    {
+        if (!(g.getFromNode(i) == node || g.getToNode(i) == node))
+        {
+            newI[k] = g.getFromNode(i);
+            newJ[k] = g.getToNode(i);
+            newW[k] = g.getWeight(i);
+            k++;
+        }
+    }
+       
+    AdjacencyList h = new AdjacencyList(g.getNodeCount(), 
+                                        newEdgeCount,
+                                        newI, newJ, newW);
+    return h;
+}
+\end{lstlisting}
 
 \section{Ergebnisse und Diskussion}
 
